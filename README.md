@@ -3,6 +3,7 @@ zcomix.com
 
 zcomix.com code base.
 
+
 Configuration
 -------------
 
@@ -11,3 +12,5 @@ Configuration
 
 2. Edit the settings as required.
    $ vi applications/zcomix/private/{settings.example.conf,settings.conf}
+
+
