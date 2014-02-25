@@ -1,0 +1,33 @@
+<div class="row-fluid" id="creator_books">
+    <div class="span3 offset9" id="view_by">
+        <div class="row-fluid" id="method">
+            <ul class="breadcrumb">
+                <li class="breadcrumb_label">view by:</li>
+                {{if request.vars.view == 'cover':}}
+                    <li class="active">cover
+                {{else:}}
+                    <li>
+                    {{cover_vars = dict(request.vars)}}
+                    {{cover_vars['view'] = 'cover'}}
+                    {{=A('cover', _href=URL(c='creators', f='books.load', args=request.args, vars=cover_vars), cid=request.cid)}}
+                {{pass}}
+                <span class="divider">|</span>
+                </li>
+                {{if request.vars.view != 'cover':}}
+                    <li class="active">list
+                {{else:}}
+                    <li>
+                    {{list_vars = dict(request.vars)}}
+                    {{list_vars['view'] = 'list'}}
+                    {{=A('list', _href=URL(c='creators', f='books.load', args=request.args, vars=list_vars), cid=request.cid)}}
+                {{pass}}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<h4>RELEASED</h4>
+{{func = 'cover_grid' if request.vars.view == 'cover' else 'list_grid'}}
+{{=LOAD(c='search', f=func, vars={'creator_id': request.args(0), 'released': 1}, extension='load', ajax=True)}}
+<h4>ONGOING</h4>
+{{=LOAD(c='search', f=func, vars={'creator_id': request.args(0), 'released': 0}, extension='load', ajax=True)}}

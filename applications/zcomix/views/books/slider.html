@@ -1,0 +1,22 @@
+{{from applications.zcomix.modules.images import img_tag}}
+{{extend 'books/reader.html'}}
+<div id="slider_page">
+    <div id="container">
+        {{if pages:}}
+            {{for count, page in enumerate(pages):}}
+                <div id="img-{{=count}}" class="slide">
+                    {{=img_tag(page.image, size=size)}}
+                </div>
+            {{pass}}
+        {{else:}}
+        No pages found.
+        {{pass}}
+    </div>
+    <div class="nav-dots">
+        {{for count in range(0, len(pages)):}}
+            <div class="nav-dot" id="img-dot-{{=count}}"></div>
+        {{pass}}
+    </div>
+
+</div>
+<script src="{{=URL(c='static', f='js/slider.js')}}"> </script>

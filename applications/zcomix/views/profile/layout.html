@@ -1,0 +1,65 @@
+{{extend 'layout.html'}}
+{{wells = [
+    'index',
+    'change_password',
+    'creator',
+    'creator_links',
+    'books',
+    'book_edit',
+    'book_pages',
+    'book_links',
+    'book_release'
+    ]
+}}
+{{well_attrs = {
+    'index': { 'label': 'Account Profile'},
+    'change_password': { 'label': 'Change Password'},
+    'creator': { 'label': 'Creator Profile'},
+    'creator_links': {'label': 'Creator Links'},
+    'books': { 'label': 'Books'},
+    'book_edit': {
+        'label': 'Book Edit',
+        'parent': '__none__',          # Gets called from books grid
+        'args': request.args,
+    },
+    'book_pages': {
+        'label': 'Book Pages',
+        'parent': 'book_edit',
+        'args': request.args,
+    },
+    'book_links': {
+        'label': 'Book Links',
+        'parent': 'book_edit',
+        'args': request.args,
+    },
+    'book_release': {
+        'label': 'Book Release',
+        'parent': '__none__',          # Gets called from books grid
+        'args': request.args,
+    },
+}
+}}
+<div id="profile_page">
+{{for well in wells:}}
+    {{parent = well_attrs[well]['parent'] if 'parent' in well_attrs[well] else None}}
+    {{active_parent = well_attrs[request.function]['parent'] if request.function in well_attrs and 'parent' in well_attrs[request.function] else None}}
+    {{if request.function != well:}}
+        {{if parent and parent != request.function and active_parent != well:}}
+            {{continue}}
+        {{if parent and parent == request.function and not request.args:}}
+            {{continue}}
+    {{pass}}
+    {{if request.function == well:}}
+    <div class="well well-large" id="{{=well}}">
+            {{=well_attrs[well]['label']}}
+    {{else:}}
+        {{args = well_attrs[well]['args'] if 'args' in well_attrs[well] else None}}
+        <div class="well well-small" id="{{=well}}">
+            <a href="{{=URL(well, args=args, anchor=well)}}">{{=well_attrs[well]['label']}}</a>
+    {{pass}}
+    </div>
+    {{if request.function == well:}}
+        {{include}}
+    {{pass}}
+{{pass}}
+</div>

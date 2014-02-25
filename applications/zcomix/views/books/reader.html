@@ -1,0 +1,86 @@
+{{extend 'layout.html'}}
+<style type="text/css" media="screen">
+    body div.container {
+        width: 100% ;
+    }
+
+    body {
+        {{if book.background_colour:}}
+        background-color: {{=book.background_colour}};
+        {{else:}}
+        background-color: #ffffff;
+        {{pass}}
+    }
+
+    #container img {
+        {{if book.border_colour:}}
+        border: 0.2em solid {{=book.border_colour}};
+        {{else:}}
+        border: none;
+        {{pass}}
+    }
+
+    #header {
+        margin-top: 0;
+    }
+</style>
+<div id="reader_page">
+    <div class="row-fluid" id="reader_page_header">
+        <div class="span9" id="left_column">
+            <div id="book_name">
+                <a href="{{=URL(c='books', f='book', args=book.id)}}">
+                {{=book.name}} ({{=db.book.release_date.represent(book.release_date, book)}})
+                </a>
+            </div>
+            <div id="creator">
+                <div id="creator_name">
+                    <a href="{{=URL(c='creators', f='creator', args=creator.id)}}">{{=creator.name}}</a>
+                </div>
+                Follow FIXME
+            </div>
+        </div>
+        <div class="span3" id="right_column">
+            {{=LOAD(c='search', f='box', extension='load', ajax=False, content='')}}
+            <div id="layout">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb_label">layout:</li>
+                    {{if request.function != 'scroller':}}
+                        <li class="active">slider
+                    {{else:}}
+                        <li>
+                        {{=A('slider', _href=URL(c='books', f='slider', args=request.args, vars=request.vars), cid=request.cid)}}
+                    {{pass}}
+                    <span class="divider">|</span>
+                    </li>
+                    {{if request.function == 'scroller':}}
+                        <li class="active">scroller
+                    {{else:}}
+                        <li>
+                        {{=A('scroller', _href=URL(c='books', f='scroller', args=request.args, vars=request.vars), cid=request.cid)}}
+                    {{pass}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+<div id="content_container">
+{{include}}
+</div>
+<div class="row">
+    <div class="span12" id="reader_page_footer">
+        <div>
+            <ul class="breadcrumb">
+            <li>
+                <div id="contribute_widget_container">
+                    {{=LOAD(c='contributions', f='contribute_widget', args=book.id, extension='load', ajax=True, content='')}}
+                    {{if creator.paypal_email:}}
+                        <span class="divider">|</span>
+                    {{pass}}
+                </div>
+            </li>
+            <li><a href="#">download</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
