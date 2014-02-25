@@ -49,19 +49,19 @@ def server_production_mode(request):
     Returns
         str: 'test' or 'live'
     """
-    # If http_host = '127.0.0.1:8000' then web2py started from the shell.
-    if request.env.http_host and request.env.http_host != '127.0.0.1:8000':
+    server_mode = None
+    if request.env.http_host:
         server_mode = request.env.server_production_mode
-        if not server_mode:
-            raise ServerEnvironmentError("\n".join((
-                    'request.env.server_production_mode variable not set.',
-                    'Use SetEnv in httpd conf file.'
-                )))
-    else:
+
+    if not server_mode:
         server_mode = os.environ.get('SERVER_PRODUCTION_MODE', '')
-        if not server_mode:
-            raise ServerEnvironmentError("\n".join((
-                    'SERVER_PRODUCTION_MODE environment variable not set.',
-                    'Make sure local_rc file is sourced.'
-                )))
+
+    if not server_mode:
+        raise ServerEnvironmentError("\n".join((
+                'Server product mode environment variable not set.'
+                'Option 1: Use SetEnv in httpd conf file.'
+                '    request.env.server_production_mode variable not set.',
+                'Option 2: Use command line environment variable.'
+                'export SERVER_PRODUCTION_MODE=test; python web2py.py',
+        )))
     return server_mode
