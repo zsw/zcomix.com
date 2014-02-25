@@ -13,7 +13,9 @@ from applications.zcomix.modules.images import \
 from applications.zcomix.modules.links import \
     CustomLinks, \
     ReorderLink
-from applications.zcomix.modules.utils import reorder
+from applications.zcomix.modules.utils import \
+    move_record, \
+    reorder
 from applications.zcomix.modules.stickon.sqlhtml import \
     InputWidget, \
     LocalSQLFORM
@@ -143,6 +145,13 @@ def book_pages_handler():
     """Callback function for the jQuery-File-Upload plugin.
 
     request.args(0): integer, id of book.
+
+    # Add
+    request.vars.up_files: list of files representing pages to add to book.
+
+    # Delete
+    request.vars.book_page_id: integer, id of book_page to delete
+
     """
     def do_error(msg):
         return dumps({'files': [{'error': msg}]})
@@ -204,6 +213,51 @@ def book_pages_handler():
     else:
         # GET
         return book_pages_as_json(db, book_record.id)
+
+
+@auth.requires_login()
+def book_pages_reorder():
+    """Callback function for reordering book pages.
+
+    request.args(0): integer, id of book.
+    request.vars.book_page_id: integer, id of book_page
+    request.vars.dir: string, direction to move page, 'up'(default) or 'down'
+    """
+    def do_error(msg):
+        return dumps({'success': False, 'error': msg})
+
+    # Verify user is legit
+    creator_record = db(db.creator.auth_user_id == auth.user_id).select(
+        db.creator.ALL
+    ).first()
+    if not creator_record:
+        return do_error('Reorder service unavailable.')
+
+    book_record = None
+    if request.args(0):
+        query = (db.book.id == request.args(0))
+        book_record = db(query).select(db.book.ALL).first()
+    if not book_record or book_record.creator_id != creator_record.id:
+        return do_error('Reorder service unavailable.')
+
+    page_record = None
+    if request.vars.book_page_id:
+        query = (db.book_page.id == request.vars.book_page_id)
+        page_record = db(query).select(db.book_page.ALL).first()
+    if not page_record:
+        return do_error('Reorder service unavailable.')
+
+    direction = request.vars.dir or 'up'
+    if direction not in ['up', 'down']:
+        direction = 'up'
+
+    move_record(
+        db.book_page.page_no,
+        page_record.id,
+        direction=direction,
+        query=(db.book_page.book_id == book_record.id),
+    )
+    return dumps({'success': True})
 
 
 @auth.requires_login()

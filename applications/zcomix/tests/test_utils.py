@@ -11,6 +11,7 @@ from BeautifulSoup import BeautifulSoup
 from gluon import *
 from applications.zcomix.modules.utils import \
     ItemDescription, \
+    move_record, \
     reorder
 from applications.zcomix.modules.test_runner import LocalTestCase
 
@@ -75,8 +76,13 @@ class TestItemDescription(LocalTestCase):
 
 class TestFunctions(LocalTestCase):
 
-    def test__reorder(self):
+    _fields = ['a', 'b', 'c']
+    _by_name = {}
 
+    # C0103: *Invalid name "%s" (should match %s)*
+    # pylint: disable=C0103
+    @classmethod
+    def setUpClass(cls):
         db.define_table(
             'test__reorder',
             Field('name'),
@@ -86,74 +92,115 @@ class TestFunctions(LocalTestCase):
 
         db.test__reorder.truncate()
 
-        fields = ['a', 'b', 'c']
-        by_name = {}
-        for f in fields:
+        for f in cls._fields:
             record_id = db.test__reorder.insert(
                 name=f,
                 order_no=0,
             )
             db.commit()
-            by_name[f] = record_id
+            cls._by_name[f] = record_id
 
-        def reset():
-            record_ids = [
-                by_name['a'],
-                by_name['b'],
-                by_name['c'],
-            ]
-            reorder(db.test__reorder.order_no, record_ids=record_ids)
-
-        def ordered_values(field='name'):
-            """Get the field values in order."""
-            values = db().select(
-                db.test__reorder[field],
-                orderby=[db.test__reorder.order_no, db.test__reorder.id],
-            )
-            return [x[field] for x in values]
-
-        reorder(db.test__reorder.order_no)
-        self.assertEqual(ordered_values(), ['a', 'b', 'c'])
-
-        # Test record_ids param
-        reset()
+    def _reset(self):
         record_ids = [
-            by_name['b'],
-            by_name['c'],
-            by_name['a'],
+            self._by_name['a'],
+            self._by_name['b'],
+            self._by_name['c'],
         ]
         reorder(db.test__reorder.order_no, record_ids=record_ids)
-        self.assertEqual(ordered_values(), ['b', 'c', 'a'])
+
+    def _ordered_values(self, field='name'):
+        """Get the field values in order."""
+        values = db().select(
+            db.test__reorder[field],
+            orderby=[db.test__reorder.order_no, db.test__reorder.id],
+        )
+        return [x[field] for x in values]
+
+    def test__move_record(self):
+        self._reset()
+        reorder(db.test__reorder.order_no)
+        self.assertEqual(self._ordered_values(), ['a', 'b', 'c'])
+
+        def test_move(name, direction, expect, query=None):
+            move_record(
+                db.test__reorder.order_no,
+                self._by_name[name],
+                direction=direction,
+                query=query,
+            )
+            self.assertEqual(self._ordered_values(), expect)
+
+        test_move('a', 'up', ['a', 'b', 'c'])
+        test_move('a', 'down', ['b', 'a', 'c'])
+        test_move('a', 'down', ['b', 'c', 'a'])
+        test_move('a', 'down', ['b', 'c', 'a'])
+        test_move('a', 'up', ['b', 'a', 'c'])
+        test_move('a', 'up', ['a', 'b', 'c'])
+        test_move('a', 'up', ['a', 'b', 'c'])
+        test_move('b', '_fake_', ['b', 'a', 'c'])
+
+        # Test non-existent id
+        self._reset()
+        move_record(
+            db.test__reorder.order_no,
+            99999,              # Non-existent id
+            direction='down'
+        )
+        self.assertEqual(self._ordered_values(), ['a', 'b', 'c'])
+
+        # Test query
+        query = (db.test__reorder.id.belongs(
+            [self._by_name['a'], self._by_name['b']])
+        )
+        test_move('a', 'down', ['b', 'a', 'c'], query=query)
+        # 'c' is not included in query so it doesn't move.
+        test_move('a', 'down', ['b', 'a', 'c'], query=query)
+
+    def test__reorder(self):
+        self._reset()
+
+        reorder(db.test__reorder.order_no)
+        self.assertEqual(self._ordered_values(), ['a', 'b', 'c'])
+
+        # Test record_ids param
+        self._reset()
+        record_ids = [
+            self._by_name['b'],
+            self._by_name['c'],
+            self._by_name['a'],
+        ]
+        reorder(db.test__reorder.order_no, record_ids=record_ids)
+        self.assertEqual(self._ordered_values(), ['b', 'c', 'a'])
 
         # Test query param
-        reset()
+        self._reset()
         query = (db.test__reorder.id > 0)
         reorder(db.test__reorder.order_no, query=query)
-        self.assertEqual(ordered_values(), ['a', 'b', 'c'])
+        self.assertEqual(self._ordered_values(), ['a', 'b', 'c'])
 
         # Test start param
-        reset()
+        self._reset()
         reorder(db.test__reorder.order_no, start=100)
-        self.assertEqual(ordered_values(), ['a', 'b', 'c'])
-        self.assertEqual(ordered_values(field='order_no'), [100, 101, 102])
+        self.assertEqual(self._ordered_values(), ['a', 'b', 'c'])
+        self.assertEqual(self._ordered_values(field='order_no'), [100, 101, 102])
 
         # Add record to table
-        reset()
+        self._reset()
         db.test__reorder.insert(
             name='d',
             order_no=9999,
         )
         db.commit()
         reorder(db.test__reorder.order_no)
-        self.assertEqual(ordered_values(), ['a', 'b', 'c', 'd'])
+        self.assertEqual(self._ordered_values(), ['a', 'b', 'c', 'd'])
 
         # Delete record from table
-        reset()
+        self._reset()
         db(db.test__reorder.name == 'b').delete()
         db.commit()
         reorder(db.test__reorder.order_no)
-        self.assertEqual(ordered_values(), ['a', 'c', 'd'])
-        self.assertEqual(ordered_values(field='order_no'), [1, 2, 3])
+        self.assertEqual(self._ordered_values(), ['a', 'c', 'd'])
+        self.assertEqual(self._ordered_values(field='order_no'), [1, 2, 3])
 
 
 def setUpModule():

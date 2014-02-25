@@ -354,6 +354,17 @@ div.centered table {
     padding-top: 2em;
 }
 
+#profile_book_pages_page .template-download .icon {
+    opacity: 0.5;
+}
+#profile_book_pages_page .template-download .arrow-muted {
+    pointer-events: none;
+    cursor: default;
+}
+#profile_book_pages_page .template-download .arrow-muted span {
+    opacity: 0.1;
+}
+
 .contribute_widget .input-mini {
     width: 60px !important;         /* Prevent web2py_bootstrap.css width change */
 }

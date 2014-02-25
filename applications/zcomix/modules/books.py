@@ -95,6 +95,8 @@ def book_page_for_json(db, book_page_id):
     )
 
     return dict(
+        book_id=book_page.book_id,
+        book_page_id=book_page.id,
         name=filename,
         size=size,
         url=url,

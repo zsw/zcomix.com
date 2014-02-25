@@ -86,7 +86,12 @@
 {% for (var i=0, file; file=o.files[i]; i++) { %}
     <tr class="template-download fade">
         <td>
-            jimk
+            <a href="" class="reorder-arrow reorder-arrow-up" data-book_id="{%=file.book_id%}" data-book_page_id="{%=file.book_page_id%}" data-dir="up">
+            <span class="icon arrow-up icon-arrow-up" title="Move up"></span>
+            </a>
+            <a href="" class="reorder-arrow reorder-arrow-down" data-book_id="{%=file.book_id%}" data-book_page_id="{%=file.book_page_id%}" data-dir="down">
+            <span class="icon arrow-down icon-arrow-down" title="Move down"></span>
+            </a>
         </td>
         <td>
             <span class="preview">
@@ -147,11 +152,15 @@
 <script src="{{=URL(c='static', f='js/description.js')}}"> </script>
 <script>
 //<![CDATA[
-    $(document).ready(function(){
-        $('#fileupload').fileupload({
-            url: '/zcomix/profile/book_pages_handler/{{=book.id}}'
+    function clear_download(context) {
+        table = context.closest('table')
+        table.find('tr.template-download').each(function(e) {
+            $(this).remove();
         });
 
+    }
+
+    function display_download() {
         $('#fileupload').addClass('fileupload-processing');
         $.ajax({
             // Uncomment the following to send cross-domain cookies:
@@ -165,6 +174,68 @@
             $(this).fileupload('option', 'done')
                 .call(this, $.Event('done'), {result: result});
         });
+    }
+
+    function set_arrows() {
+        $('.reorder-arrow').removeClass('arrow-muted');
+        $('.reorder-arrow-up').first().addClass('arrow-muted');
+        $('.reorder-arrow-down').last().addClass('arrow-muted');
+    }
+
+    function set_reorder_links() {
+        $('.reorder-arrow').click(function(e) {
+            e.preventDefault();
+
+            $('#fileupload').addClass('fileupload-processing');
+
+            var url = '/zcomix/profile/book_pages_reorder'
+            url = url + '/' + $(this).data('book_id');
+            url = url + '?book_page_id=' + $(this).data('book_page_id');
+            url = url + '&dir=' + $(this).data('dir');
+
+            var that = $(this);
+
+            $.ajax({
+                url: url,
+                dataType: 'json'
+            }).always(function () {
+                $('#fileupload').removeClass('fileupload-processing');
+            }).done(function (result) {
+                if (result['success']) {
+                    var tr = that.closest('tr');
+                    tr.fadeOut(400, function() {
+                        if (that.data('dir') === 'down') {
+                            tr.next().after(tr);
+                        }
+                        else {
+                            tr.prev().before(tr);
+                        }
+                        tr.fadeIn(400, function() {
+                            set_arrows();
+                        });
+                    });
+                }
+                else {
+                    clear_download(that);
+                    display_download();
+                }
+            })
+        });
+    }
+
+    $(document).ready(function(){
+        $('#fileupload').fileupload({
+            url: '/zcomix/profile/book_pages_handler/{{=book.id}}'
+        });
+        $('#fileupload')
+            .on('fileuploaddestroyed', function (e, data) {
+                set_arrows();
+                })
+            .on('fileuploadfinished', function (e, data) {
+                set_reorder_links();
+                set_arrows();
+            });
+        display_download();
     });
 //]]>
 </script>

@@ -72,6 +72,45 @@ class ItemDescription(object):
         return DIV(*divs, **kwargs)
 
 
+def move_record(sequential_field, record_id, direction='up', query=None, start=1):
+    """Move a record in the direction.
+
+    Args:
+        sequential_field: gluon.dal.Field instance
+        record_id: integer, id of record to move.
+        direction: string, 'up' or 'down'
+        query: gluon.dal.Query, a query used to filter records updated.
+            Only records returned by this query will be reordered.
+                db(query).select()
+            If None, all records of the table are reordered.
+        start: integer, the sequential field value of the first record is set
+            to this. Subsequent records have values incremented by 1.
+    """
+    db = sequential_field._db
+    table = sequential_field.table
+
+    record = db(table.id == record_id).select(table.ALL).first()
+    if not record:
+        # If the record doesn't exist, it can't be moved.
+        return
+
+    # Create a list of ids in order except for the one that is moved.
+    filter_query = (table.id != record_id)
+    if query:
+        filter_query = filter_query & query
+    rows = db(filter_query).select(table.id, orderby=sequential_field)
+    record_ids = [x.id for x in rows]
+
+    # Insert the moved record in it's new location.
+    old_order_value = record[sequential_field.name]
+    new_order_value = old_order_value + 1 if direction == 'down' \
+        else old_order_value - 1
+    if new_order_value < start:
+        new_order_value = start
+    record_ids.insert(new_order_value - 1, record.id)
+    reorder(sequential_field, record_ids=record_ids, query=query, start=start)
+
+
 def reorder(sequential_field, record_ids=None, query=None, start=1):
     """Reset a table's sequential field values.
 

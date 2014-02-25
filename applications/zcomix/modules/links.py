@@ -6,7 +6,9 @@
 Creator classes and functions.
 """
 from gluon import *
-from applications.zcomix.modules.utils import reorder
+from applications.zcomix.modules.utils import \
+    move_record, \
+    reorder
 
 
 class CustomLinks(object):
@@ -101,21 +103,13 @@ class CustomLinks(object):
         record = db(self.to_link_table.id == to_link_table_id).select(
                 self.to_link_table.ALL).first()
 
-        # Create a list of ids in order except for the one that is moved.
-        query = (self.join_to_link_field == record[self.join_to_link_fieldname]) & \
-                (self.to_link_table.id != record.id)
-        rows = db(query).select(self.to_link_table.id,
-                orderby=self.to_link_table.order_no)
-        link_ids = [x.id for x in rows]
-
-        # Insert the moved one to it's new position
-        new_order_no = record.order_no + 1 if direction == 'down' \
-                else record.order_no - 1
-        if new_order_no <= 0:
-            new_order_no = 1
-        link_ids.insert(new_order_no - 1, record.id)
-
-        self.reorder(link_ids=link_ids)
+        query = (self.join_to_link_field == record[self.join_to_link_fieldname])
+        move_record(
+            self.to_link_table.order_no,
+            record.id,
+            direction=direction,
+            query=query,
+        )
 
     def reorder(self, link_ids=None):
         """Reorder the links setting the order_no according to the prescribed
