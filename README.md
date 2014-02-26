@@ -14,7 +14,7 @@ The following python modules are used.
 2. [Python Imaging Library](http://pythonware.com/products/pil/ "Python Imaging Library (PIL)") or [Pillow](https://github.com/python-imaging/Pillow "Pillow on github.com")
 
 
-To install with [ArchLinux](http://www.archlinux.com), use the following command.
+To install with [ArchLinux](http://www.archlinux.org), use the following command.
 
     $ pacman -S python2-beautifulsoup3 python2-pillow
 
