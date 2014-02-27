@@ -63,11 +63,15 @@ class Downloader(Response):
 
 class Resizer(object):
     """Class representing an image resizer"""
+
     sizes = {
         # size: (w px, h px)
         'medium': (500, 500),
         'thumb': (170, 170),
     }
+
+    thumb_shrink_threshold = 120
+    thumb_shrink_multiplier = 0.80
 
     def __init__(self, field, image_name):
         """Constructor
@@ -79,6 +83,8 @@ class Resizer(object):
         """
         self.field = field
         self.image_name = image_name
+        self._images = {}               # {'size': Image instance}
+        self._dimensions = {}           # {'size': (w, h)}
 
     def delete(self, size):
         """Delete a version of the image
@@ -87,10 +93,9 @@ class Resizer(object):
             size: string, name of size, must one of the keys of the cls.sizes
                     dict
         """
-        fullname = self.fullname()
-        new_fullname = fullname.replace('/original/', '/{s}/'.format(s=size))
-        if os.path.exists(new_fullname):
-            os.unlink(new_fullname)
+        fullname = self.fullname(size=size)
+        if os.path.exists(fullname):
+            os.unlink(fullname)
 
     def delete_all(self):
         """Delete all sizes."""
@@ -98,13 +103,45 @@ class Resizer(object):
             self.delete(size)
         self.delete('original')
 
-    def fullname(self):
+    def dimensions(self, size='original'):
+        """Return the dimensions of the image of the indicated size.
+
+        Args:
+            size: string, name of size, must one of the keys of the cls.sizes
+                    dict
+        """
+        if not self._dimensions or size not in self._dimensions:
+            im = self.pil_image(size=size)
+            if im:
+                self._dimensions[size] = im.size
+            else:
+                self._dimensions[size] = None
+        return self._dimensions[size]
+
+    def fullname(self, size='original'):
         """Return the fullname of the image."""
         unused_file_name, fullname = self.field.retrieve(
             self.image_name,
             nameonly=True,
         )
+        if size != 'original':
+            fullname = fullname.replace('/original/', '/{s}/'.format(s=size))
         return fullname
+
+    def pil_image(self, size='original'):
+        """Return a PIL Image instance representing the image.
+
+        Args:
+            size: string, name of size, must one of the keys of the cls.sizes
+                    dict
+        """
+        if not self._images or size not in self._images:
+            filename = self.fullname(size=size)
+            if os.path.exists(filename):
+                self._images[size] = Image.open(filename)
+            else:
+                self._images[size] = None
+        return self._images[size]
 
     def resize(self, size):
         """Resize the image.
@@ -113,15 +150,16 @@ class Resizer(object):
             size: string, name of size, must one of the keys of the cls.sizes
                     dict
         """
-        fullname = self.fullname()
-        new_fullname = fullname.replace('/original/', '/{s}/'.format(s=size))
-        new_path = os.path.dirname(new_fullname)
-        if not os.path.exists(new_path):
-            os.makedirs(new_path)
-        im = Image.open(fullname)
+        original_filename = self.fullname(size='original')
+        sized_filename = self.fullname(size=size)
+        sized_path = os.path.dirname(sized_filename)
+        if not os.path.exists(sized_path):
+            os.makedirs(sized_path)
+        im = Image.open(original_filename)
         im.thumbnail(self.sizes[size], Image.ANTIALIAS)
-        im.save(new_fullname)
-        return new_fullname
+        im.save(sized_filename)
+        # self.dimensions[size] = im.size
+        return sized_filename
 
     def resize_all(self):
         """Resize all sizes."""
@@ -129,30 +167,64 @@ class Resizer(object):
             self.resize(size)
 
 
-def img_tag(field, size='original'):
+def img_tag(field, size='original', img_attributes=None):
     """Return an image HTML tag suitable for an resizeable image.
 
     Args:
         field: gluon.dal.Field instance, eg db.creator.image
         size: string, the image size
+        img_attributes: dict, passed on as IMG(**img_attributes)
     """
-    if not field:
-        return IMG(
+    attributes = {}
+
+    if field:
+        if size != 'original' and size not in Resizer.sizes.keys():
+            size = 'original'
+
+        attributes.update(dict(
+            _src=URL(
+                c='images',
+                f='download',
+                args=field,
+                vars={'size': size},
+            ),
+        ))
+    else:
+        attributes.update(dict(
             _src=URL(
                 c='static',
                 f='images',
                 args='portrait_placeholder.png'
-            )
-        )
+            ),
+        ))
 
-    if size != 'original' and size not in Resizer.sizes.keys():
-        size = 'original'
+    if img_attributes:
+        attributes.update(img_attributes)
 
-    return IMG(
-        _src=URL(
-            c='images',
-            f='download',
-            args=field,
-            vars={'size': size},
-        )
+    return IMG(**attributes)
+
+
+def set_thumb_dimensions(db, book_page_id, dimensions):
+    """Set the db.book_page.thumb_* dimension values for a page.
+
+    Args:
+        db: gluon.dal.Dal instance.
+        book_page_id: integer, id of book_page record
+        dimensions: tuple (w, h), dimensions of thumb image.
+    """
+    if not dimensions:
+        return
+    w = dimensions[0]
+    h = dimensions[1]
+    shrink = True if h > Resizer.thumb_shrink_threshold \
+        and w > Resizer.thumb_shrink_threshold \
+        else False
+
+    thumb_shrink = Resizer.thumb_shrink_multiplier if shrink else 1
+
+    db(db.book_page.id == book_page_id).update(
+        thumb_w=w,
+        thumb_h=h,
+        thumb_shrink=thumb_shrink
     )
+    db.commit()

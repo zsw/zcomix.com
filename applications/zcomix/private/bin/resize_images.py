@@ -14,7 +14,9 @@ import traceback
 from gluon import *
 from gluon.shell import env
 from optparse import OptionParser
-from applications.zcomix.modules.images import Resizer
+from applications.zcomix.modules.images import \
+    Resizer, \
+    set_thumb_dimensions
 
 VERSION = 'Version 0.1'
 APP_ENV = env(__file__.split(os.sep)[-3], import_models=True)
@@ -98,6 +100,10 @@ class ImageHandler(object):
                     a=action, t=field.table, i=record_id, f=original, s=size))
                 if not self.dry_run:
                     resizer.resize(size)
+                    if str(field) == 'book_page.image' and size == 'thumb':
+                        set_thumb_dimensions(
+                            db, record_id, resizer.dimensions(size='thumb')
+                        )
 
 
 def man_page():
@@ -171,7 +177,7 @@ OPTIONS
 def main():
     """Main processing."""
 
-    usage = '%prog [options] "to postal code" "comma delimited weights"'
+    usage = '%prog [options] [file...]'
     parser = OptionParser(usage=usage, version=VERSION)
 
     parser.add_option(

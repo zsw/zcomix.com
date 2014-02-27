@@ -48,6 +48,7 @@ class Search(object):
         """Constructor"""
         self.grid = None
         self.orderby_field = None
+        self.paginate = 0
 
     def set(self, db, request, grid_args=None):
         """Set the grid.
@@ -274,6 +275,7 @@ class Search(object):
             kwargs.update(grid_args)
 
         self.grid = LocalSQLFORM.grid(query, **kwargs)
+        self.paginate = kwargs['paginate']       # Make paginate accessible.
         # Remove 'None' record count if applicable.
         for count, div in enumerate(self.grid[0]):
             if str(div) == '<div class="web2py_counter">None</div>':

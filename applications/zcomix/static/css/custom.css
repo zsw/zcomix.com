@@ -91,14 +91,34 @@ div.centered table {
 }
 
 #front_page #grid_section .details_container {
+    margin: 0.5em 0;
     padding: 0;
+}
+
+#front_page #grid_section .details_container .number {
+    fload: left;
+    position: absolute;
+    top: 0.4em;
+    left: 0.4em;
+}
+
+#front_page #grid_section .details_container .image {
+    text-align: left;
+    //border: 1px solid #ff0000;
+    margin-left: 0;
+    //jk height: 100%;
+    //jk width: 100%;
+    //jk max-height: 12.2em;
+    //jk max-width: 12.2em;
 }
 
 #front_page #grid_section .details_inner_container {
     background-color: #ddd;
     border-radius: 0.4em;
-    padding: 0.6em;
-    margin: 0.4em 0;
+    padding: 0;
+    margin: 0;
+    //jk height: 12.2em;
+    min-height: 12.2em;
 }
 
 #front_page #grid_section .odd {
@@ -117,21 +137,20 @@ div.centered table {
 
 #creator_page #report_section .details,
 #front_page #grid_section .details {
-    padding: 0.4em;
-    margin: 0.5em 0;
     height: 100%;
-    min-height: 11em;
+    //jk min-height: 11em;
+    position: relative;
 }
+
 
 #front_page #grid_section .detail {
     position: relative;
-    padding: 0.4em;
     height: 100%;
-    min-height: 12em;
+    //jk min-height: 12em;
 }
 
-#front_page #grid_section img {
-    max-height: 13em;
+#front_page #grid_section .detail_padding {
+    padding: 0.8em;
 }
 
 #front_page #grid_section .title {
@@ -139,14 +158,26 @@ div.centered table {
 }
 
 #front_page #grid_section .detail .detail_label {
-    padding-top: 0.4em;
+    padding-top: 0.6em;
 }
 
 #front_page #grid_section .creator {
     font-size: 8pt;
 }
 
-#front_page #grid_section .value {
+#front_page #grid_section .sticky_footer_padding{
+    padding-top: 1em;
+}
+
+#front_page #grid_section .sticky_footer{
+    line-height: 1em;
+}
+
+#front_page #grid_section .contributions_container {
+    min-height: 1em;
+}
+
+#front_page #grid_section .contributions_value {
     font-size: 18pt;
 }
 
@@ -157,6 +188,7 @@ div.centered table {
 #front_page #grid_section .download_links {
     white-space: nowrap;
     padding-top: 0.4em;
+    min-height: 1em;
 }
 
 @media screen and (max-width: 48em){
@@ -179,16 +211,20 @@ div.centered table {
         text-align: left;
     }
 
+    #front_page #grid_section .details_container .image {
+        text-align: right;
+    }
+
     #front_page #grid_section .contributions_container {
         text-align: right;
     }
 
-    #front_page #grid_section .sticky_footer{
-        position: absolute;
-        bottom: 0.4em;
-        left: 0;
-        padding: 0 0.4em;
-        width: 97%;
+    #front_page #grid_section .contributions_container {
+        text-align: right;
+    }
+
+    #front_page #grid_section .contributions_value {
+        text-align: right;
     }
 }
 
