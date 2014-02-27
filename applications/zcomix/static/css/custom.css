@@ -38,14 +38,14 @@ div.centered table {
     background-color: #fff;
     color: #666666;
     font-size: 13pt;
-    height: 2em;
-    width: 11.5em;
-    -webkit-border-radius: 0.6em;
-    -moz-border-radius: 0.6em;
-    -o-border-radius: 0.6em;
-    -ms-border-radius: 0.6em;
-    -khtml-border-radius: 0.6em;
-    border-radius: 0.6em;
+    height: 2.5em;
+    max-width: 16em;
+    -webkit-border-radius: 0.4em;
+    -moz-border-radius: 0.4em;
+    -o-border-radius: 0.4em;
+    -ms-border-radius: 0.4em;
+    -khtml-border-radius: 0.4em;
+    border-radius: 0.4em;
     border: 1px solid #666666;
 }
 
@@ -73,14 +73,50 @@ div.centered table {
     margin-top: 3em;
 }
 
+#front_page .nav-tabs {
+    border-bottom: 1px solid #333333;
+}
+
+#front_page .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
+    border-color: #333333 #333333 transparent;
+}
+
+#front_page #top_10_heading .nav {
+    margin-bottom: 0.5em;
+}
+
 #front_page #view_by_breadcrumb {
     margin: 0;
     padding-bottom: 0;
 }
 
+#front_page #grid_section .details_container {
+    padding: 0;
+}
+
+#front_page #grid_section .details_inner_container {
+    background-color: #ddd;
+    border-radius: 0.4em;
+    padding: 0.6em;
+    margin: 0.4em 0;
+}
+
+#front_page #grid_section .odd {
+    margin-left: 0 !important;
+    margin-right: 0.57766% !important;
+    width: 49.3762%;
+    /* width: 48.9362%; */
+}
+
+#front_page #grid_section .even {
+    margin-right: 0 !important;
+    margin-left: 0.57766% !important;
+    width: 49.3762%;
+}
+
+
 #creator_page #report_section .details,
 #front_page #grid_section .details {
-    background-color: #ddd;
     padding: 0.4em;
     margin: 0.5em 0;
     height: 100%;
@@ -123,6 +159,11 @@ div.centered table {
     padding-top: 0.4em;
 }
 
+@media screen and (max-width: 48em){
+    #search form {
+        float: none;
+    }
+}
 
 @media screen and (min-width: 48em){
 
@@ -392,6 +433,10 @@ div.centered table {
 
 /* temp stuff start \\\*/
 #FIXME_page [class*="span"] {
+    border: 1px solid red;
+}
+
+#FIXM [class*="span"] {
     border: 1px solid red;
 }
 

@@ -2,13 +2,13 @@
 <div id="front_page">
 
 <div class="row-fluid" id="top_section">
-<div class="span3 offset9">
+<div class="span4 offset8">
     {{=LOAD(c='search', f='box', extension='load', ajax=False, content='')}}
 </div>
 </div>
 
 <div class="row-fluid" id="intro_section">
-<div class="span8" id="intro">
+<div class="span7" id="intro">
 This is a not-for-profit site dedicated to promoting self-publishing comic
 creators. It's also an attempt to help readers by organizing content produced
 by these creators.
@@ -16,10 +16,7 @@ by these creators.
 </div>
 
 <div class="row-fluid" id="middle_section">
-<div class="span8" id="top_10_heading">
-    <div id="top_10_label">
-        Top 10 by:
-    </div>
+<div class="span12" id="top_10_heading">
     <ul class="nav nav-tabs">
     {{orderbys = ['views', 'newest']}}
     {{orderby = request.vars.o if request.vars.o in orderbys else orderbys[0]}}
@@ -31,56 +28,6 @@ by these creators.
         </li>
     {{pass}}
     </ul>
-</div>
-<div class="span4" id="view_by">
-    <div class="row-fluid">
-        <div>
-            <ul class="breadcrumb" id="view_by_breadcrumb">
-                <li class="breadcrumb_label">view by:</li>
-                {{if request.vars.view != 'list':}}
-                    <li class="active">cover
-                {{else:}}
-                    <li>
-                    {{cover_vars = dict(request.vars)}}
-                    {{cover_vars['view'] = 'cover'}}
-                    {{=A('cover', _href=URL(c='search', f='index', args=request.args, vars=cover_vars), cid=request.cid)}}
-                {{pass}}
-                <span class="divider">|</span>
-                </li>
-                {{if request.vars.view == 'list':}}
-                    <li class="active">list
-                {{else:}}
-                    <li>
-                    {{list_vars = dict(request.vars)}}
-                    {{list_vars['view'] = 'list'}}
-                    {{=A('list', _href=URL(c='search', f='index', args=request.args, vars=list_vars), cid=request.cid)}}
-                {{pass}}
-                </li>
-            </ul>
-            <ul class="breadcrumb" id="for_last_breadcrumb">
-                <li class="breadcrumb_label">for last:</li>
-                {{if request.vars.view == 'month':}}
-                    <li class="active">month
-                {{else:}}
-                    <li>
-                    {{month_vars = dict(request.vars)}}
-                    {{month_vars['view'] = 'month'}}
-                    {{=A('month', _href=URL(c='search', f='index', args=request.args, vars=month_vars), cid=request.cid)}}
-                {{pass}}
-                <span class="divider">|</span>
-                </li>
-                {{if request.vars.view != 'month':}}
-                    <li class="active">year
-                {{else:}}
-                    <li>
-                    {{list_vars = dict(request.vars)}}
-                    {{list_vars['view'] = 'year'}}
-                    {{=A('year', _href=URL(c='search', f='index', args=request.args, vars=list_vars), cid=request.cid)}}
-                {{pass}}
-                </li>
-            </ul>
-        </div>
-    </div>
 </div>
 </div>
 <div id="grid_section">
