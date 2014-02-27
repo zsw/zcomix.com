@@ -4,6 +4,11 @@
 .table-row {display: table-row}
 .table-cell {display: table-cell}
 
+a {
+    color: #0000FF;
+    text-decoration: none;
+}
+
 .breadcrumb_label {
     padding-right: 0.4em;
 }
@@ -18,7 +23,11 @@ div.centered table {
 }
 
 #header {
-    margin-top: 2em;
+    margin-top: 0;
+}
+
+.main {
+    padding-top: 0;
 }
 
 #search {
@@ -27,7 +36,7 @@ div.centered table {
 
 #search input {
     background-color: #fff;
-    color: #aaa;
+    color: #666666;
     font-size: 13pt;
     height: 2em;
     width: 11.5em;
@@ -37,6 +46,7 @@ div.centered table {
     -ms-border-radius: 0.6em;
     -khtml-border-radius: 0.6em;
     border-radius: 0.6em;
+    border: 1px solid #666666;
 }
 
 .custom_link {
@@ -48,8 +58,8 @@ div.centered table {
 }
 
 #front_page #intro {
-    background: #333;
-    color: #aaa;
+    background: #666666;
+    color: #FFFFFF;
     padding: 2em;
     -webkit-border-radius: 1em;
     -moz-border-radius: 1em;
@@ -115,6 +125,11 @@ div.centered table {
 
 
 @media screen and (min-width: 48em){
+
+    #front_page #intro {
+        margin-top: -3em;
+    }
+
     #front_page #grid_section .creator {
         text-align: right;
     }
