@@ -66,7 +66,7 @@ class Resizer(object):
     sizes = {
         # size: (w px, h px)
         'medium': (500, 500),
-        'thumb': (150, 150),
+        'thumb': (170, 170),
     }
 
     def __init__(self, field, image_name):
@@ -100,7 +100,6 @@ class Resizer(object):
 
     def fullname(self):
         """Return the fullname of the image."""
-        db = self.field._db
         unused_file_name, fullname = self.field.retrieve(
             self.image_name,
             nameonly=True,

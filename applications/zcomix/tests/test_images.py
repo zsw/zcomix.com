@@ -25,6 +25,7 @@ from applications.zcomix.modules.test_runner import LocalTestCase
 # R0904: Too many public methods
 # pylint: disable=C0111,R0904
 
+
 class ImageTestCase(LocalTestCase):
     """ Base class for Image test cases. Sets up test data."""
 
@@ -213,13 +214,13 @@ class TestFunctions(LocalTestCase):
         has_src(tag, '/zcomix/static/images/portrait_placeholder.png')
 
         tag = img_tag(db.creator.image, size='original')
-        has_src(tag, '/zcomix/images/download?size=original')
+        has_src(tag, '/images/download?size=original')
 
         tag = img_tag(db.creator.image, size='thumb')
-        has_src(tag, '/zcomix/images/download?size=thumb')
+        has_src(tag, '/images/download?size=thumb')
 
         tag = img_tag(db.creator.image, size='_fake_')
-        has_src(tag, '/zcomix/images/download?size=original')
+        has_src(tag, '/images/download?size=original')
 
 
 def setUpModule():
