@@ -18,12 +18,14 @@ from gluon.http import HTTP
 from applications.zcomix.modules.images import \
     Downloader, \
     Resizer, \
-    img_tag
+    img_tag, \
+    set_thumb_dimensions
 from applications.zcomix.modules.test_runner import LocalTestCase
 
 # C0111: Missing docstring
 # R0904: Too many public methods
 # pylint: disable=C0111,R0904
+
 
 class ImageTestCase(LocalTestCase):
     """ Base class for Image test cases. Sets up test data."""
@@ -87,7 +89,7 @@ class TestDownloader(ImageTestCase):
             # size: bytes
             'original': 23127,
             'medium': 4723,
-            'thumb': 1027,
+            'thumb': 1111,
         }
 
         def test_http(expect_size):
@@ -145,6 +147,8 @@ class TestResizer(ImageTestCase):
             nameonly=True,
         )
         self.assertEqual(self._image_name, file_name)
+        self.assertEqual(resizer._images, {})
+        self.assertEqual(resizer._dimensions, {})
 
     def test__delete(self):
         resizer = Resizer(db.creator.image, self._creator.image)
@@ -170,6 +174,27 @@ class TestResizer(ImageTestCase):
         resizer.delete_all()        # Handle subsequent delete gracefully
         self._exist(have_not=['original', 'medium', 'thumb'])
 
+    def test__dimensions(self):
+        resizer = Resizer(db.creator.image, self._creator.image)
+        self.assertEqual(resizer._dimensions, {})
+
+        dims = resizer.dimensions()
+        self.assertTrue('original' in resizer._dimensions)
+        self.assertEqual(dims, resizer._dimensions['original'])
+
+        # Should get from cache.
+        resizer._dimensions['original'] = (1, 1)
+        dims_2 = resizer.dimensions()
+        self.assertEqual(dims_2, (1, 1))
+
+        dims_3 = resizer.dimensions(size='medium')
+        self.assertTrue('medium' in resizer._dimensions)
+        self.assertEqual(dims_3, None)
+
+        medium = resizer.resize('medium')
+        dims_4 = resizer.dimensions(size='medium')
+        self.assertEqual(dims_4, (500, 500))
+
     def test__fullname(self):
         resizer = Resizer(db.creator.image, self._creator.image)
         self.assertEqual(
@@ -179,6 +204,41 @@ class TestResizer(ImageTestCase):
                 i=self._creator.image,
             ),
         )
+        self.assertEqual(
+            resizer.fullname(size='medium'),
+            '/tmp/image_resizer/medium/creator.image/{u}/{i}'.format(
+                u=self._uuid_key,
+                i=self._creator.image,
+            ),
+        )
+        self.assertEqual(
+            resizer.fullname(size='_fake_'),
+            '/tmp/image_resizer/_fake_/creator.image/{u}/{i}'.format(
+                u=self._uuid_key,
+                i=self._creator.image,
+            ),
+        )
+
+    def test__pil_image(self):
+        resizer = Resizer(db.creator.image, self._creator.image)
+        self.assertEqual(resizer._images, {})
+
+        im = resizer.pil_image()
+        self.assertTrue('original' in resizer._images)
+        self.assertEqual(im, resizer._images['original'])
+
+        # Should get from cache.
+        resizer._images['original'] = '_stub_'
+        im_2 = resizer.pil_image()
+        self.assertEqual(im_2, resizer._images['original'])
+
+        im_3 = resizer.pil_image(size='medium')
+        self.assertTrue('medium' in resizer._images)
+        self.assertEqual(im_3, None)
+
+        medium = resizer.resize('medium')
+        im_4 = resizer.pil_image(size='medium')
+        self.assertEqual(im_4, resizer._images['medium'])
 
     def test__resize(self):
         resizer = Resizer(db.creator.image, self._creator.image)
@@ -204,22 +264,65 @@ class TestResizer(ImageTestCase):
 class TestFunctions(LocalTestCase):
 
     def test__img_tag(self):
-        def has_src(tag, src):
+        def has_attr(tag, attr, value):
             soup = BeautifulSoup(str(tag))
             img = soup.find('img')
-            self.assertEqual(src, img['src'])
+            self.assertEqual(img[attr], value)
 
         tag = img_tag(None)
-        has_src(tag, '/zcomix/static/images/portrait_placeholder.png')
+        has_attr(tag, 'src', '/zcomix/static/images/portrait_placeholder.png')
 
         tag = img_tag(db.creator.image, size='original')
-        has_src(tag, '/zcomix/images/download?size=original')
+        has_attr(tag, 'src', '/images/download?size=original')
 
         tag = img_tag(db.creator.image, size='thumb')
-        has_src(tag, '/zcomix/images/download?size=thumb')
+        has_attr(tag, 'src', '/images/download?size=thumb')
 
         tag = img_tag(db.creator.image, size='_fake_')
-        has_src(tag, '/zcomix/images/download?size=original')
+        has_attr(tag, 'src', '/images/download?size=original')
+
+        # Test img_attributes parameter
+        attrs = dict(_class='img_class', _id='img_id', _style='height: 1px;')
+        tag = img_tag(db.creator.image, img_attributes=attrs)
+        has_attr(tag, 'src', '/images/download?size=original')
+        has_attr(tag, 'class', 'img_class')
+        has_attr(tag, 'id', 'img_id')
+        has_attr(tag, 'style', 'height: 1px;')
+
+        # If _src is among img_attributes, it should supercede.
+        attrs = dict(_src='http://www.src.com', _id='img_id')
+        tag = img_tag(db.creator.image, img_attributes=attrs)
+        has_attr(tag, 'src', 'http://www.src.com')
+        has_attr(tag, 'id', 'img_id')
+
+    def test__set_thumb_dimensions(self):
+        book_page_id = db.book_page.insert(
+            page_no=1,
+            thumb_w=0,
+            thumb_h=0,
+            thumb_shrink=0,
+        )
+        db.commit()
+        book_page = db(db.book_page.id == book_page_id).select().first()
+        self._objects.append(book_page)
+
+        tests = [
+            # dimensions, expect
+            ((170, 170), 0.80),
+            ((170, 121), 0.80),
+            ((170, 120), 1),
+            ((121, 170), 0.80),
+            ((120, 170), 1),
+            ((120, 120), 1),
+            ((121, 121), 0.80),
+        ]
+
+        for t in tests:
+            set_thumb_dimensions(db, book_page.id, t[0])
+            book_page = db(db.book_page.id == book_page_id).select().first()
+            self.assertEqual(book_page.thumb_w, t[0][0])
+            self.assertEqual(book_page.thumb_h, t[0][1])
+            self.assertEqual(book_page.thumb_shrink, t[1])
 
 
 def setUpModule():

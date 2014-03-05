@@ -22,12 +22,12 @@ To install with [ArchLinux](http://www.archlinux.org), use the following command
 Configuration
 -------------
 
-1. Copy settings.examples.conf to settings.conf
+Copy settings.examples.conf to settings.conf
 
     $ cp applications/zcomix/private/{settings.example.conf,settings.conf}
 
 
-2. Edit the settings as required.
+Edit the settings as required.
 
     $ vi applications/zcomix/private/settings.conf
 

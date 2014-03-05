@@ -9,7 +9,8 @@ from applications.zcomix.modules.books import \
     read_link
 from applications.zcomix.modules.images import \
     Resizer, \
-    img_tag
+    img_tag, \
+    set_thumb_dimensions
 from applications.zcomix.modules.links import \
     CustomLinks, \
     ReorderLink
@@ -185,10 +186,12 @@ def book_pages_handler():
                 book_id=book_record.id,
                 page_no=page_no,
                 image=stored_filename,
+                thumb_shrink=1,
             )
             db.commit()
             resizer = Resizer(db.book_page.image, stored_filename)
             resizer.resize_all()
+            set_thumb_dimensions(db, page_id, resizer.dimensions(size='thumb'))
             book_page_ids.append(page_id)
         # Make sure page_no values are sequential
         reorder_query = (db.book_page.book_id == book_record.id)

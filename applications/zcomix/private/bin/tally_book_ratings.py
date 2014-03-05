@@ -66,7 +66,7 @@ OPTIONS
 def main():
     """Main processing."""
 
-    usage = '%prog [options] "to postal code" "comma delimited weights"'
+    usage = '%prog [options]'
     parser = OptionParser(usage=usage, version=VERSION)
 
     parser.add_option('--man',

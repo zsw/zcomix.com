@@ -28,6 +28,7 @@ def cover_grid():
     paginator = soup.find('div', {'class': 'web2py_paginator grid_header '})
     return dict(
             grid=search.grid,
+            items_per_page=search.paginate,
             orderby_field=search.orderby_field,
             paginator=paginator,
             )

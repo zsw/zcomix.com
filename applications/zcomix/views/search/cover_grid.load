@@ -12,46 +12,53 @@
             <div class="span6 details_container {{=parity_class}}">
                 <div class="details_inner_container">
                     <div class="row-fluid details img-rounded">
-                        <div class="span1 number">
-                        {{=i + j}}
+                        <div class="number">
+                            {{try:}}{{page = int(request.vars.page or 1)}}{{except:}}{{page = 1}}{{pass}}
+                            {{=((page - 1) * items_per_page) + (i + j)}}
                         </div>
-                        <div class="span3 image">
+                        <div class="span5 image">
                             {{=cover_image(db, row.book.id, size='thumb')}}
                         </div>
-                        <div class="span8 detail">
-                            <div class="row-fluid title">
-                                <a href="{{=URL(c='books', f='book', args=row.book.id, extension=False)}}">
-                                {{=row.book.name}} ({{=db.book.release_date.represent(row.book.release_date, row.book)}})
-                                </a>
-                            </div>
-                            <div class="row-fluid sticky_footer_wrapper">
-                                <div class="span3 read">
-                                    {{=read_link(db, row.book.id, **dict(_class='btn', _type='button'))}}
-                                </div>
-                                <div class="span9 creator">
-                                    <a href="{{=URL(c='creators', f='creator', args=row.creator.id, extension=False)}}">
-                                    {{=row.creator.name}}
+                        <div class="span7 detail">
+                            <div class="detail_padding">
+                                <div class="row-fluid title">
+                                    <a href="{{=URL(c='books', f='book', args=row.book.id, extension=False)}}">
+                                    {{=row.book.name}} ({{=db.book.release_date.represent(row.book.release_date, row.book)}})
                                     </a>
                                 </div>
-                            </div>
-                            <div class="row-fluid sticky_footer">
-                                <div class="span4 download_links">
-                                    <button class="btn btn-small" type="button">download</button>
-                                </div>
-                                <div class="span8 contributions_container">
-                                    <div class="detail_label">
-                                        {{=orderby_field['label']}}
+                                <div class="row-fluid sticky_footer_wrapper">
+                                    <div class="span3 read">
+                                        {{=read_link(db, row.book.id, **dict(_class='btn', _type='button'))}}
                                     </div>
-                                    <div class="value">
-                                        {{if orderby_field['periods']:}}
-                                            {{period = 'month' if request.vars.period == 'month' else 'year'}}
-                                            {{fieldname = '{f}_{p}'.format(f=orderby_field['field'], p=period)}}
-                                        {{else:}}
-                                            {{fieldname = orderby_field['field']}}
-                                        {{pass}}
-                                        {{tablename = orderby_field['table']}}
-                                        {{value = row[tablename][fieldname]}}
-                                        {{=orderby_field['fmt'](value)}}
+                                    <div class="span9 creator">
+                                        <a href="{{=URL(c='creators', f='creator', args=row.creator.id, extension=False)}}">
+                                        {{=row.creator.name}}
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="sticky_footer_padding">
+                                    <div class="row-fluid sticky_footer">
+                                        <div class="span4 download_links">
+                                            <button class="btn btn-small" type="button">download</button>
+                                        </div>
+                                        <div class="span8 contributions_container">
+                                            <div class="detail_label">
+                                                {{=orderby_field['label']}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row-fluid">
+                                        <div class="span12 contributions_value">
+                                            {{if orderby_field['periods']:}}
+                                                {{period = 'month' if request.vars.period == 'month' else 'year'}}
+                                                {{fieldname = '{f}_{p}'.format(f=orderby_field['field'], p=period)}}
+                                            {{else:}}
+                                                {{fieldname = orderby_field['field']}}
+                                            {{pass}}
+                                            {{tablename = orderby_field['table']}}
+                                            {{value = row[tablename][fieldname]}}
+                                            {{=orderby_field['fmt'](value)}}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

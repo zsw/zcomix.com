@@ -85,22 +85,27 @@ use_janrain(auth, filename='private/janrain.key')
 
 crud.settings.auth = None                      # =auth to enforce authorization on crud
 
-auth.signature = db.Table(db, 'auth_signature',
-                  Field('created_on',
-                      'datetime',
-                      default=request.now,
-                      represent=lambda dt, row: str(dt),
-                      readable=False,
-                      writable=False,
-                      ),
-                  Field('updated_on',
-                      'datetime',
-                      default=request.now,
-                      update=request.now,
-                      represent=lambda dt, row: str(dt),
-                      readable=False,
-                      writable=False,
-                      ))
+auth.signature = db.Table(
+    db,
+    'auth_signature',
+    Field(
+        'created_on',
+        'datetime',
+        default=request.now,
+        represent=lambda dt, row: str(dt),
+        readable=False,
+        writable=False,
+    ),
+    Field(
+        'updated_on',
+        'datetime',
+        default=request.now,
+        update=request.now,
+        represent=lambda dt, row: str(dt),
+        readable=False,
+        writable=False,
+    )
+)
 
 db._common_fields = [auth.signature]
 
@@ -114,65 +119,69 @@ db.define_table('book',
         'integer',
         writable=False,
         readable=False,
-        ),
-    Field('description', 'text',
+    ),
+    Field(
+        'description',
+        'text',
         comment='A brief description of the book.',
-        ),
-    Field('release_date', 'date',
+    ),
+    Field(
+        'release_date',
+        'date',
         default=None,
         represent=lambda v, row: str(v.year) if v else 'ongoing',
         label='Released',
         comment='Leave blank if not yet released (ongoing).',
-        ),
+    ),
     Field('contributions_month', 'double',
         default=0,
         writable=False,
         readable=False,
-        ),
+    ),
     Field('contributions_year', 'double',
         default=0,
         writable=False,
         readable=False,
-        ),
+    ),
     Field('views_month', 'integer',
         default=0,
         writable=False,
         readable=False,
-        ),
+    ),
     Field('views_year', 'integer',
         default=0,
         writable=False,
         readable=False,
-        ),
+    ),
     Field('rating_month', 'double',
         default=0,
         writable=False,
         readable=False,
-        ),
+    ),
     Field('rating_year', 'double',
         default=0,
         writable=False,
         readable=False,
-        ),
+    ),
     Field('downloads', 'integer',
         default=0,
         writable=False,
         readable=False,
-        ),
+    ),
     Field('background_colour',
         default='#FFFFFF',
-        ),
+    ),
     Field('border_colour',
         default='#FFFFFF',
-        ),
+    ),
     Field('reader',
         default='slider',
         requires=IS_IN_SET(['scroller', 'slider']),
         comment='Default reader format.'
-        ),
+    ),
     format='%(name)s',
     migrate=True,
-    )
+)
 
 db.define_table('book_page',
     Field(
@@ -182,22 +191,39 @@ db.define_table('book_page',
         readable=False,
     ),
     Field('page_no', 'integer'),
-    Field('image', 'upload',
+    Field(
+        'image',
+        'upload',
         autodelete=True,
         requires = IS_IMAGE(),
         uploadfolder=os.path.join(request.folder, 'uploads', 'original'),
         uploadseparate=True,
-        ),
+    ),
+    Field(
+        'thumb_w',
+        'integer',
+        default=0,
+    ),
+    Field(
+        'thumb_h',
+        'integer',
+        default=0,
+    ),
+    Field(
+        'thumb_shrink',
+        'double',
+        default=1,
+    ),
     format='%(page_no)s',
     migrate=True,
-    )
+)
 
 db.define_table('book_to_link',
     Field('book_id', 'integer'),
     Field('link_id', 'integer'),
     Field('order_no', 'integer'),
     migrate=True,
-    )
+)
 
 db.define_table('contribution',
     Field(
@@ -211,7 +237,7 @@ db.define_table('contribution',
     Field('time_stamp', 'datetime'),
     Field('amount', 'double'),
     migrate=True,
-    )
+)
 
 db.define_table('creator',
     Field(
@@ -226,74 +252,74 @@ db.define_table('creator',
     Field('email',
         label='Contact email',
         comment='Leave blank if you do not wish your email published.',
-        represent=lambda email, row: A(email,
-
+        represent=lambda email, row: A(
+            email,
             _href='mailto:{e}'.format(e=email),
             _target="_blank",
-            ) if email else '',
-        ),
+        ) if email else '',
+    ),
     Field('paypal_email',
         label='Paypal email',
         comment='Required to received donations.',
-        ),
+    ),
     Field('website',
         comment='Eg. http://www.myhomepage.com',
         represent=lambda url, row: A(url,
             _href=url,
             _target="_blank",
             ) if url else '',
-        ),
+    ),
     Field('twitter',
         comment='Eg. @username',
         represent=lambda twit, row: A(twit,
             _href='https://twitter.com/{t}'.format(t=twit),
             _target="_blank",
             ) if twit else '',
-        ),
+    ),
     Field('tumblr',
         comment='Eg. http://username.tumblr.com',
         represent=lambda url, row: A(url,
             _href=url,
             _target="_blank",
             ) if url else '',
-        ),
+    ),
     Field('wikipedia',
         comment='Eg. http://en.wikipedia.org/wiki/First_Surname',
-        ),
+    ),
     Field('bio', 'text',
         comment='Provide a biography, for example, a few sentences similar to the first paragraph of a wikipedia article.'
-        ),
+    ),
     Field('image', 'upload',
         autodelete=True,
         requires = IS_EMPTY_OR(IS_IMAGE()),
         uploadfolder=os.path.join(request.folder, 'uploads', 'original'),
         uploadseparate=True,
-        ),
+    ),
     format='%(name)s',
     migrate=True,
-    )
+)
 
 db.define_table('creator_to_link',
     Field('creator_id', 'integer'),
     Field('link_id', 'integer'),
     Field('order_no', 'integer'),
     migrate=True,
-    )
+)
 
 db.define_table('link',
     Field('name',
         label='Text',
         requires=IS_LENGTH(40, 1),
-        ),
+    ),
     Field('url',
         requires=IS_URL(),
         widget=lambda field, value: SQLFORM.widgets.string.widget(field,
             value, _placeholder='http://www.example.com'),
-        ),
+    ),
     Field('title'),
     format='%(name)s',
     migrate=True,
-    )
+)
 
 db.define_table('page_comment',
     Field(
@@ -303,7 +329,7 @@ db.define_table('page_comment',
     Field('comment_text'),
     format='%(comment_text)s',
     migrate=True,
-    )
+)
 
 db.define_table('rating',
     Field(
@@ -317,7 +343,7 @@ db.define_table('rating',
     Field('time_stamp', 'datetime'),
     Field('amount', 'double'),
     migrate=True,
-    )
+)
 
 db.define_table('book_view',
     Field(
@@ -330,7 +356,7 @@ db.define_table('book_view',
     ),
     Field('time_stamp', 'datetime'),
     migrate=True,
-    )
+)
 
 db.book.creator_id.requires = IS_IN_DB(
     db,
