@@ -80,6 +80,7 @@ div.centered table {
 
 #front_page .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
     border-color: #333333 #333333 transparent;
+    color: #333333;
 }
 
 #front_page #top_10_heading .nav {
@@ -107,10 +108,17 @@ div.centered table {
     text-align: left;
     margin-left: 0;
     height: 100%;
+    border: 2px solid #EEE;
+    -webkit-border-radius: 0.4em;
+    -moz-border-radius: 0.4em;
+    -o-border-radius: 0.4em;
+    -ms-border-radius: 0.4em;
+    -khtml-border-radius: 0.4em;
+    border-radius: 0.4em;
 }
 
 #front_page #grid_section .details_inner_container {
-    background-color: #ddd;
+    background-color: #EEE;
     border-radius: 0.4em;
     padding: 0;
     margin: 0;
@@ -146,6 +154,17 @@ div.centered table {
     padding: 0.8em;
 }
 
+#front_page #grid_section .detail .read{
+    letter-spacing: 0.1em;
+    width: 100%;
+}
+
+#front_page #grid_section .detail .read .btn{
+    //padding-left: 1.8em;
+    //padding-right: 1.55em;
+    width: 100%;
+}
+
 #front_page #grid_section .title {
     padding-bottom: 0.4em;
 }
@@ -166,12 +185,19 @@ div.centered table {
     line-height: 1em;
 }
 
+#front_page #grid_section .sticky_footer .btn-small {
+    padding-left: 0;
+    padding-right: 0;
+}
+
 #front_page #grid_section .contributions_container {
     min-height: 1em;
 }
 
 #front_page #grid_section .contributions_value {
     font-size: 18pt;
+    width: 100%;
+    padding-top: 0.4em;
 }
 
 #front_page #grid_section .created_on {
@@ -180,8 +206,13 @@ div.centered table {
 
 #front_page #grid_section .download_links {
     white-space: nowrap;
-    padding-top: 0.4em;
+    padding-top: 0.2em;
     min-height: 1em;
+    width: 100%;
+}
+
+#front_page #grid_section .download_links .btn {
+    width: 100%;
 }
 
 #front_page #grid_section .web2py_paginator {

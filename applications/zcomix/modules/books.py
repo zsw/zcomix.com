@@ -207,4 +207,4 @@ def read_link(db, book_entity, **attributes):
         reader = book.reader or 'slider'
         url = URL(c='books', f=reader, args=book.id, extension=False)
         kwargs['_href'] = url
-    return A('READ', **kwargs)
+    return A('Read', **kwargs)
