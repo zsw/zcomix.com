@@ -28,7 +28,7 @@ def book():
         db,
         book_record,
         **dict(
-            _class='btn btn-large',
+            _class='btn btn-default btn-lg',
             _type='button',
         )
     )

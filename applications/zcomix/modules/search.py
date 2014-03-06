@@ -164,10 +164,10 @@ class Search(object):
                 return ''
 
             return A(
-                SPAN(_class="icon pen icon-pencil"),
+                SPAN(_class="glyphicon glyphicon-pencil"),
                 'Edit',
                 _href=URL(c='profile', f='book_edit', args=book_id, anchor='book_edit', extension=False),
-                _class='btn',
+                _class='btn btn-default',
                 _type='button',
                 )
 
@@ -175,7 +175,7 @@ class Search(object):
             book_id = link_book_id(row)
             if not book_id:
                 return ''
-            return read_link(db, book_id, **dict(_class='btn', _type='button'))
+            return read_link(db, book_id, **dict(_class='btn btn-default', _type='button'))
 
         def release_link(row):
             book_id = link_book_id(row)
@@ -184,7 +184,7 @@ class Search(object):
 
             return A('Release',
                 _href=URL(c='profile', f='book_release', args=book_id, extension=False),
-                _class='btn',
+                _class='btn btn-default',
                 _type='button',
                 )
 

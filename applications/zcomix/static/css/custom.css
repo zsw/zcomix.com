@@ -1,3 +1,10 @@
+/*
+    @screen-xs       480px
+    @screen-sm       768px
+    @screen-md       992px
+    @screen-lg       1200px
+*/
+
 @charset "UTF-8";
 /* custom \\\ */
 .table {display: table}
@@ -48,6 +55,7 @@ div.centered table {
     -khtml-border-radius: 0.4em;
     border-radius: 0.4em;
     border: 1px solid #666666;
+    padding: 4px 14px;
 }
 
 .custom_link {
@@ -93,22 +101,16 @@ div.centered table {
 }
 
 #front_page #grid_section .details_container {
-    margin: 0.5em 0;
-    padding: 0;
-}
-
-#front_page #grid_section .details_container .number {
-    fload: left;
-    position: absolute;
-    top: 0.4em;
-    left: 0.4em;
+    background-color: #EEEEEE;
+    //border: 1px solid #333333;
+    border-radius: 0.4em;
+    margin: 0.4em 0;
 }
 
 #front_page #grid_section .details_container .image {
     text-align: left;
     margin-left: 0;
     height: 100%;
-    border: 2px solid #EEE;
     -webkit-border-radius: 0.4em;
     -moz-border-radius: 0.4em;
     -o-border-radius: 0.4em;
@@ -116,34 +118,10 @@ div.centered table {
     -khtml-border-radius: 0.4em;
     border-radius: 0.4em;
 }
-
-#front_page #grid_section .details_inner_container {
-    background-color: #EEE;
-    border-radius: 0.4em;
-    padding: 0;
-    margin: 0;
-    min-height: 12.2em;
-}
-
-#front_page #grid_section .odd {
-    margin-left: 0 !important;
-    margin-right: 0.57766% !important;
-    width: 49.3762%;
-    /* width: 48.9362%; */
-}
-
-#front_page #grid_section .even {
-    margin-right: 0 !important;
-    margin-left: 0.57766% !important;
-    width: 49.3762%;
-}
-
-
 #creator_page #report_section .details,
 #front_page #grid_section .details {
     position: relative;
 }
-
 
 #front_page #grid_section .detail {
     position: relative;
@@ -221,13 +199,25 @@ div.centered table {
     margin-top: 0.6em;
 }
 
-@media screen and (max-width: 48em){
-    #search form {
-        float: none;
+
+@media screen and (min-width: 768px){
+    #front_page #grid_section .details_container {
+        min-width: 30em;
+    }
+
+    #front_page #grid_section .details_container .number {
+        fload: left;
+        position: absolute;
+        top: 0.4em;
+        left: 0.4em;
+    }
+
+    #front_page #grid_section .details_container .image {
+        text-align: right;
     }
 }
 
-@media screen and (min-width: 48em){
+@media screen and (min-width: 992px){
 
     #front_page #intro {
         margin-top: -3em;
@@ -241,10 +231,6 @@ div.centered table {
         text-align: left;
     }
 
-    #front_page #grid_section .details_container .image {
-        text-align: right;
-    }
-
     #front_page #grid_section .contributions_container {
         text-align: right;
     }
@@ -255,6 +241,24 @@ div.centered table {
 
     #front_page #grid_section .contributions_value {
         text-align: right;
+    }
+
+    #creator_page #report_section .details,
+    #front_page #grid_section .details {
+        height: 170px;
+    }
+
+    #front_page #grid_section .odd {
+        margin-left: 0 !important;
+        margin-right: 0.57766% !important;
+        width: 49.3762%;
+        /* width: 48.9362%; */
+    }
+
+    #front_page #grid_section .even {
+        margin-right: 0 !important;
+        margin-left: 0.57766% !important;
+        width: 49.3762%;
     }
 }
 
@@ -393,7 +397,7 @@ div.centered table {
 }
 
 
-@media screen and (min-width: 48em){
+@media screen and (min-width: 992px){
     #reader_page {
         min-width: 60em;
     }
@@ -409,7 +413,7 @@ div.centered table {
     top: 0; left: 0; bottom: 0; right: 0;
 }
 
-#reader_page #container{
+#reader_page #reader_container{
     position: relative;
 }
 
@@ -472,12 +476,13 @@ div.centered table {
     margin: 1em 0;
 }
 
-#profile_book_pages_page .container {
+#profile_book_pages_page .fileupload_container {
     padding-top: 2em;
 }
 
-#profile_book_pages_page .template-download .icon {
-    opacity: 0.5;
+#profile_book_pages_page .template-download span.glyphicon {
+    color: black;
+    opacity: 0.3;
 }
 #profile_book_pages_page .template-download .arrow-muted {
     pointer-events: none;
@@ -512,8 +517,12 @@ div.centered table {
 .footer-content #footer_links .breadcrumb {
     background-color: inherit;
     font-size: 12px;
+    margin: 0 0 20px;
 }
 
+.footer-content #footer_links .breadcrumb > li + li:before {
+    content: "\7C"     /* Ascii hex code for | */
+}
 
 /* temp stuff start \\\*/
 #FIXME_page [class*="span"] {

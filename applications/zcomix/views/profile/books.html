@@ -3,7 +3,7 @@
     <div class="books_list_title">
     <h4>RELEASED</h4>
     <a onclick="web2py_component('{{=URL(c='search', f='list_grid', vars={'creator_id': request.args(0), 'released': 1, 'rw': 1}, extension='load')}}', 'released_container');" title="Refresh">
-        <span class="icon refresh icon-refresh"></span>
+        <span class="glyphicon glyphicon-refresh"></span>
     </a>
     </div>
     <div id="released_container">
@@ -13,11 +13,11 @@
     <div class="books_list_title">
     <h4>ONGOING</h4>
     <a onclick="web2py_component('{{=URL(c='search', f='list_grid', vars={'creator_id': request.args(0), 'released': 0, 'rw': 1}, extension='load')}}', 'ongoing_container');" title="Refresh">
-        <span class="icon refresh icon-refresh"></span>
+        <span class="glyphicon glyphicon-refresh"></span>
     </a>
     </div>
     <div>
-        <a href="{{=URL('book_edit')}}" class="btn">Add</a>
+        <a href="{{=URL('book_edit')}}" class="btn btn-default">Add</a>
     </div>
     <div id="ongoing_container">
     {{=LOAD(c='search', f='list_grid', vars={'creator_id': request.args(0), 'released': 0, 'rw': 1}, extension='load', ajax=True, target='ongoing_container', content='')}}

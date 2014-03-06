@@ -51,9 +51,9 @@ class CustomLinks(object):
         links_list = self.links()
         if edit_url:
             edit_button = A(
-                    'Edit', SPAN('', _class='icon share-alt icon-share-alt'),
+                    'Edit', SPAN('', _class='glyphicon glyphicon-new-window'),
                     _href=edit_url,
-                    _class='btn',
+                    _class='btn btn-default',
                     _type='button',
                     _target='_blank',
                     )
@@ -137,7 +137,7 @@ class CustomLinks(object):
         if not links:
             return None
         return UL([LI(x) for x in self.links()],
-                _class='inline',
+                _class='list-inline',
                 )
 
 
@@ -208,7 +208,7 @@ class ReorderLink(object):
             return SPAN('-')
 
         return A(SPAN('',
-                    _class='icon arrow-{dir} icon-arrow-{dir}'.format(dir=self.direction),
+                    _class='glyphicon glyphicon-arrow-{dir}'.format(dir=self.direction),
                     _title=self.direction
                     ),
                 _href=URL(c='profile', f='order_no_handler',

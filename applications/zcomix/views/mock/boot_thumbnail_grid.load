@@ -1,12 +1,12 @@
 {{from applications.zcomix.modules.books import cover_image, read_link}}
 <h4>Bootstrap</h4>
 {{if grid.rows:}}
-    <div class="container">
+    <div class="thumb_container">
     <ul class="thumbnails">
         {{for i in range(0, len(grid.rows) - 1): }}
             {{row = grid.rows[i]}}
-            <li class="span4">
-            <div class="thumbnail">
+            <li class="col-sm-4">
+            <div class="img-thumbnail">
                 <img data-src="holder.js/170x170" src="{{=URL(c='static', f='images/samples/{n}'.format(n=row.image_name))}}"/>
                 <h3>My Title</h3>
                 <p>blabla bllskdjf ksdjf ksjdf ksjd fkjsd kfjsd</p>

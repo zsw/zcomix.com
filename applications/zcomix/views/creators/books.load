@@ -1,6 +1,6 @@
-<div class="row-fluid" id="creator_books">
-    <div class="span3 offset9" id="view_by">
-        <div class="row-fluid" id="method">
+<div class="row" id="creator_books">
+    <div class="col-sm-3 col-sm-offset-9" id="view_by">
+        <div class="row" id="method">
             <ul class="breadcrumb">
                 <li class="breadcrumb_label">view by:</li>
                 {{if request.vars.view == 'cover':}}

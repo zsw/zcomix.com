@@ -1,6 +1,6 @@
-<div class="contribute_widget">
+<div class="row contribute_widget">
     {{if book and creator and creator.paypal_email:}}
-        <input type="text" id="contribute_amount" name="amount" class="input-mini" value="{{=amount}}"/>
+        <input type="text" id="contribute_amount" name="amount" class="input-sm col-sm-3 col-xs-1" value="{{=amount}}"/>
         <a href="{{=URL(c='contributions', f='record', args=book.id, extension=False)}}" id="contribute_link">contribute</a>
     {{pass}}
 </div>

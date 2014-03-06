@@ -2,37 +2,39 @@
 {{from applications.zcomix.modules.utils import ItemDescription}}
 {{extend 'layout.html'}}
 <div id="creator_page">
-<div class="row-fluid" id="top_section">
-    <div class="span7" id="top_left_column">
+<div class="row" id="top_section">
+    <div class="col-sm-7" id="top_left_column">
         <div id="name">
             {{=creator.name}}
         </div>
         {{=ItemDescription(creator.bio).as_html(**dict(_id='bio'))}}
-        <div class="row-fluid" id="id_section">
-            <div class="span4" id="mug_shot">
+        <div class="row" id="id_section">
+            <div class="col-sm-4" id="mug_shot">
                 {{=img_tag(creator.image, size='thumb')}}
             </div>
-            <div class="span8" id="id_details">
+            <div class="col-sm-8" id="id_details">
+                <dl class="dl-horizontal">
                 {{for f in ['website', 'email', 'twitter', 'tumblr']:}}
                     {{try:}}
                     {{if creator[f]:}}
-                        <div>{{=f}}: {{=db.creator[f].represent(creator[f], creator)}}</div>
+                        <dt>{{=f}}:</dt>
+                        <dd>{{=db.creator[f].represent(creator[f], creator)}}</dd>
                     {{pass}}
                     {{except:}}
                     {{pass}}
                 {{pass}}
                 {{if links:}}
-                <div>links:
-                    {{=links}}
-                </div>
+                    <dt>links:</dt>
+                    <dd>{{=links}}</dd>
                 {{pass}}
+                </dl>
             </div>
         </div>
     </div>
 
-    <div class="span5" id="top_right_column">
-        <div class="row-fluid">
-            <div class="span7 offset5">
+    <div class="col-sm-5" id="top_right_column">
+        <div class="row">
+            <div class="col-sm-7 col-sm-offset-5">
                 {{=LOAD(c='search', f='box', extension='load', ajax=False, content='')}}
             </div>
         </div>
