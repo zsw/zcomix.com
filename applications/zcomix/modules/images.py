@@ -190,11 +190,13 @@ def img_tag(field, size='original', img_attributes=None):
             ),
         ))
     else:
+        img_name = 'placeholder_170x170.png' \
+            if size == 'thumb' else 'portrait_placeholder.png'
         attributes.update(dict(
             _src=URL(
                 c='static',
                 f='images',
-                args='portrait_placeholder.png'
+                args=[img_name],
             ),
         ))
 

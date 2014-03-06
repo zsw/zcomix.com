@@ -28,6 +28,7 @@ div.centered table {
 
 .main {
     padding-top: 0;
+    padding-bottom: 0;
 }
 
 #search {
@@ -104,12 +105,8 @@ div.centered table {
 
 #front_page #grid_section .details_container .image {
     text-align: left;
-    //border: 1px solid #ff0000;
     margin-left: 0;
-    //jk height: 100%;
-    //jk width: 100%;
-    //jk max-height: 12.2em;
-    //jk max-width: 12.2em;
+    height: 100%;
 }
 
 #front_page #grid_section .details_inner_container {
@@ -117,7 +114,6 @@ div.centered table {
     border-radius: 0.4em;
     padding: 0;
     margin: 0;
-    //jk height: 12.2em;
     min-height: 12.2em;
 }
 
@@ -137,8 +133,6 @@ div.centered table {
 
 #creator_page #report_section .details,
 #front_page #grid_section .details {
-    height: 100%;
-    //jk min-height: 11em;
     position: relative;
 }
 
@@ -146,7 +140,6 @@ div.centered table {
 #front_page #grid_section .detail {
     position: relative;
     height: 100%;
-    //jk min-height: 12em;
 }
 
 #front_page #grid_section .detail_padding {
@@ -189,6 +182,12 @@ div.centered table {
     white-space: nowrap;
     padding-top: 0.4em;
     min-height: 1em;
+}
+
+#front_page #grid_section .web2py_paginator {
+    background-color: inherit;
+    border-top: 1px solid;
+    margin-top: 0.6em;
 }
 
 @media screen and (max-width: 48em){
@@ -467,14 +466,21 @@ div.centered table {
 
 .footer {
     border-top: none;
+    padding-top: 0;
 }
+
+.footer-content {
+    margin-left: 1em;
+}
+
 
 .footer-content div {
     display: inline-block;
 }
 
-.footer-content #logo {
-    margin-right: 0.6em;
+.footer-content #footer_links .breadcrumb {
+    background-color: inherit;
+    font-size: 12px;
 }
 
 

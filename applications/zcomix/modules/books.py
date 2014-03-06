@@ -8,6 +8,7 @@ Book classes and functions.
 import os
 import stat
 from gluon import *
+from gluon.storage import Storage
 from gluon.contrib.simplejson import dumps
 from applications.zcomix.modules.images import \
     Resizer, \
@@ -124,7 +125,15 @@ def cover_image(db, book_id, size='original'):
     image = first_page.image if first_page else None
 
     attributes = {}
-    if first_page and size == 'thumb':
+
+    if size == 'thumb':
+        if not first_page:
+            # Create a dummy book_page record
+            first_page = Storage(
+                thumb_w=Resizer.sizes['thumb'][0],
+                thumb_h=Resizer.sizes['thumb'][1],
+                thumb_shrink=Resizer.thumb_shrink_multiplier,
+            )
         fmt = ' '.join([
             'width: {w}px;',
             'height: {h}px;',
