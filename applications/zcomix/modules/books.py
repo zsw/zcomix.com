@@ -109,13 +109,14 @@ def book_page_for_json(db, book_page_id):
     )
 
 
-def cover_image(db, book_id, size='original'):
+def cover_image(db, book_id, size='original', img_attributes=None):
     """Return html code suitable for the cover image.
 
     Args:
         db: gluon.dal.DAL instance
         book_id: integer, the id of the book
         size: string, the size of the image. One of Resizer.sizes.keys()
+        img_attributes: dict of attributes for IMG
     """
     query = (db.book_page.book_id == book_id)
     first_page = db(query).select(
@@ -156,6 +157,10 @@ def cover_image(db, book_id, size='original'):
             pr=0,
             pv=padding_vertical,
         )
+
+    if img_attributes:
+        attributes.update(img_attributes)
+
     return img_tag(image, size=size, img_attributes=attributes)
 
 

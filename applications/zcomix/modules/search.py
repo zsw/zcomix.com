@@ -153,9 +153,10 @@ class Search(object):
         def download_link(row):
             book_id = link_book_id(row)
             return A(
-                'download',
+                'Download',
                 _href=URL(c='books', f='download', args=book_id, extension=False),
-                _class='fixme',
+                _class='btn btn-default fixme',
+                _type='button',
                 )
 
         def edit_link(row):
@@ -212,15 +213,15 @@ class Search(object):
         else:
             links.append(
                 {
-                    'header': 'contribute',
-                    'body': contribute_link,
-                }
+                    'header': '',
+                    'body': download_link,
+                },
                 )
             links.append(
                 {
-                    'header': 'download',
-                    'body': download_link,
-                },
+                    'header': '',
+                    'body': contribute_link,
+                }
                 )
 
         if request.vars.view != 'list' or not creator:

@@ -25,9 +25,15 @@ def creator():
     if not creator_record:
         redirect(URL(c='default', f='index'))
 
+    pre_links = []
+    if creator_record.tumblr:
+        pre_links.append(A('tumblr', _href=creator_record.tumblr, _target='_blank'))
+    if creator_record.wikipedia:
+        pre_links.append(A('wikipedia', _href=creator_record.wikipedia, _target='_blank'))
+
     return dict(
         creator=creator_record,
-        links=CustomLinks(db.creator, creator_record.id).represent(),
+        links=CustomLinks(db.creator, creator_record.id).represent(pre_links=pre_links),
     )
 
 

@@ -10,57 +10,63 @@
                 {{row = None}}
             {{else:}}
             {{parity_class = 'even' if j % 2 else 'odd'}}
-            <div class="col-sm-12 col-md-6 details_container {{=parity_class}}">
-                <div class="row details img-rounded">
+            <div class="col-sm-12 col-md-6 item_container {{=parity_class}}">
+                <div class="row">
                     <div class="col-xs-12 number">
                         {{try:}}{{page = int(request.vars.page or 1)}}{{except:}}{{page = 1}}{{pass}}
                         {{=((page - 1) * items_per_page) + (i + j)}}
                     </div>
-                    <div class="col-sm-5 image">
+                    <div class="col-sm-5 image_container">
                         {{=cover_image(db, row.book.id, size='thumb')}}
                     </div>
-                    <div class="col-xs-12 col-sm-7 detail">
-                        <div class="detail_padding">
-                            <div class="row title">
+                    <div class="col-xs-12 col-sm-7 item_details">
+                        <div class="item_details_padding">
+                            <div class="row">
                                 <div class="col-sm-12 name">
                                     <a href="{{=URL(c='books', f='book', args=row.book.id, extension=False)}}">
                                     {{book_name = '{n} ({r})'.format(n=row.book.name, r=db.book.release_date.represent(row.book.release_date, row.book))}}
-                                    {{=ItemDescription(book_name, more_text='', truncate_length=24).as_html()}}
+                                    {{=ItemDescription(book_name, more_text='', truncate_length=29).as_html()}}
                                     </a>
                                 </div>
                             </div>
-                            <div class="row sticky_footer_wrapper">
+                            <div class="row">
                                 <div class="col-sm-12 creator">
                                     <a href="{{=URL(c='creators', f='creator', args=row.creator.id, extension=False)}}">
                                     {{=ItemDescription(row.creator.name, more_text='', truncate_length=34).as_html()}}
                                     </a>
                                 </div>
                             </div>
-                            <div class="sticky_footer_padding">
-                                <div class="row sticky_footer">
-                                    <div class="col-sm-5">
-                                        <div class="read">
-                                        {{=read_link(db, row.book.id, **dict(_class='btn btn-default btn-sm', _type='button'))}}
-                                        </div>
-                                        <div class="download_links">
-                                        <a class="btn btn-default btn-sm fixme" type="button" href="#" data-w2p_disable_with="default">Download</a>
-                                        </div>
+                            <div class="row unused_row">
+                                <div class="col-sm-12">
+                                </div>
+                            </div>
+                            <div class="row unused_row">
+                                <div class="col-sm-12">
+                                </div>
+                            </div>
+                            <div class="row buttons_orderby_container">
+                                <div class="col-sm-5">
+                                    <div class="read button_container">
+                                    {{=read_link(db, row.book.id, **dict(_class='btn btn-default btn-sm', _type='button'))}}
                                     </div>
-                                    <div class="col-sm-7 contributions_container">
-                                        <div class="detail_label">
-                                            {{=orderby_field['label']}}
-                                        </div>
-                                        <div class="contributions_value">
-                                            {{if orderby_field['periods']:}}
-                                                {{period = 'month' if request.vars.period == 'month' else 'year'}}
-                                                {{fieldname = '{f}_{p}'.format(f=orderby_field['field'], p=period)}}
-                                            {{else:}}
-                                                {{fieldname = orderby_field['field']}}
-                                            {{pass}}
-                                            {{tablename = orderby_field['table']}}
-                                            {{value = row[tablename][fieldname]}}
-                                            {{=orderby_field['fmt'](value)}}
-                                        </div>
+                                    <div class="download button_container">
+                                    <a class="btn btn-default btn-sm fixme" type="button" href="#" data-w2p_disable_with="default">Download</a>
+                                    </div >
+                                </div>
+                                <div class="col-sm-7 orderby_field_container">
+                                    <div class="orderby_field_label">
+                                        {{=orderby_field['label']}}
+                                    </div>
+                                    <div class="orderby_field_value">
+                                        {{if orderby_field['periods']:}}
+                                            {{period = 'month' if request.vars.period == 'month' else 'year'}}
+                                            {{fieldname = '{f}_{p}'.format(f=orderby_field['field'], p=period)}}
+                                        {{else:}}
+                                            {{fieldname = orderby_field['field']}}
+                                        {{pass}}
+                                        {{tablename = orderby_field['table']}}
+                                        {{value = row[tablename][fieldname]}}
+                                        {{=orderby_field['fmt'](value)}}
                                     </div>
                                 </div>
                             </div>

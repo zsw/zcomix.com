@@ -129,15 +129,24 @@ class CustomLinks(object):
             query=filter_query
         )
 
-    def represent(self):
+    def represent(self, pre_links=None, post_links=None):
         """Return HTML representing the links suitable for displaying on a
         public webpage.
+
+        Args:
+            pre_links: list of A() instances, links are added to the start of the links list.
+            post_links: list of A() instances, links are added to the end of the links list.
         """
-        links = self.links()
+        links = []
+        if pre_links:
+            links.extend(pre_links)
+        links.extend(self.links())
+        if post_links:
+            links.extend(post_links)
         if not links:
             return None
-        return UL([LI(x) for x in self.links()],
-                _class='list-inline',
+        return UL([LI(x) for x in links],
+                _class='list-inline custom_links',
                 )
 
 

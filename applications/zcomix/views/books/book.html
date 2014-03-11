@@ -2,81 +2,86 @@
 {{from applications.zcomix.modules.utils import ItemDescription}}
 {{extend 'layout.html'}}
 <div id="book_page">
-<div class="row">
-    <div class="col-sm-3 col-sm-offset-9">
+
+<div class="row" id="top_section">
+    <div class="col-sm-4 col-sm-offset-8">
         {{=LOAD(c='search', f='box', extension='load', ajax=False, content='')}}
     </div>
 </div>
+
 <div class="row">
     <div class="col-sm-5" id="left_column">
-        <div id="book_cover_img">
+        <div id="book_cover_img" class="row">
             {{=cover_image}}
         </div>
     </div>
     <div class="col-sm-7" id="right_column">
-        <div id="book_name">
-            {{=book.name}} ({{=db.book.release_date.represent(book.release_date, book)}})
-        </div>
-        {{=ItemDescription(book.description).as_html(**dict(_id='book_description'))}}
-        <div class="row" id="book_specs_read">
-            <div class="col-sm-7" id="book_specs_column">
-                <div id="contribute_widget_container">
-                {{=LOAD(c='contributions', f='contribute_widget', args=book.id, extension='load', ajax=True, content='')}}
-                </div>
-                <table>
-                    <tr><td>Pages</td><td>{{=page_count}}</td></tr>
-                    <tr><td>Status</td><td>{{='released' if book.release_date else 'ongoing'}}</td></tr>
-                    <tr><td>Rating</td><td>{{='{r:0.1f}'.format(r=book.rating_year)}}</td></tr>
-                    <tr><td>Views</td><td>{{=book.views_year}}</td></tr>
-                    <tr><td>Downloads</td><td>{{=book.downloads or 0}}<a class="btn btn-default btn-sm fixme" type="button">download</a>
-                    </td></tr>
-                    {{if links:}}
-                    <tr><td>Paper Copy</td>
-                        <td>
-                            {{=links}}
-                        </td>
-                    </tr>
-                    {{pass}}
-                </table>
+        <div class="row">
+            <div id="book_name">
+                {{=book.name}} ({{=db.book.release_date.represent(book.release_date, book)}})
             </div>
-            <div class="col-sm-5" id="read_column">
-                {{=read_button}}
-            </div>
-        </div>
-        <hr>
-        <div class="row" id="creator">
-            <div class="col-sm-3" id="creator_img_column">
-                <div id="contributions_container">
-                    <div id="creator_mug_shot">
-                        <a href="{{=URL(c='creators', f='creator', args=creator.id)}}">
-                        {{=img_tag(creator.image, size='thumb')}}
-                        </a>
+            {{=ItemDescription(book.description).as_html(**dict(_id='book_description'))}}
+            <div class="row" id="book_id_section">
+                <div class="col-sm-7" id="book_specs_column">
+                    <div id="contribute_widget_container">
+                    {{=LOAD(c='contributions', f='contribute_widget', args=book.id, extension='load', ajax=True, content='')}}
+                    </div>
+                    <div id="book_links">
+                        <dl class="dl-horizontal">
+                        <dt>pages</dt><dd>{{=page_count}}</dd>
+                        <dt>status</dt><dd>{{='released' if book.release_date else 'ongoing'}}</dd>
+                        <dt>views</dt><dd>{{=book.views_year}}</dd>
+                        <dt>downloads</dt><dd>{{=book.downloads or 0}}</dd>
+                        {{if links:}}
+                            <dt>paper copy</dt>
+                            <dd>{{=links}}</dd>
+                        {{pass}}
+                        </dl>
                     </div>
                 </div>
+                <div class="col-sm-5" id="buttons_container">
+                    <div class="read button_container">
+                    {{=read_button}}
+                    </div>
+                    <div class="download button_container">
+                    <a class="btn btn-default fixme" type="button" href="#" data-w2p_disable_with="default">Download</a>
+                    </div >
+                </div>
             </div>
-            <div class="col-sm-9" id="creator_details_column">
-                <dl class="dl-horizontal">
-                <dt>creator:</dt>
-                <dd><a href="{{=URL(c='creators', f='creator', args=creator.id)}}">{{=creator.name}}</a></dd>
-                {{for f in ['website', 'email', 'twitter', 'tumblr']:}}
-                    {{try:}}
-                    {{if creator[f]:}}
-                        <dt>{{=f}}:</dt>
-                        <dd>{{=db.creator[f].represent(creator[f], creator)}}</dd>
-                    {{pass}}
-                    {{except:}}
-                    {{pass}}
-                {{pass}}
-                <dt>wikipedia:</dt>
-                <dd><a href="http://en.wikipedia.org/wiki/Charles_Forsman" class="fixme">en.wikipedia.org/wiki/Charles_Forsman</a>
-                </dd>
-                <dt>torrent: </dt>
-                <dd><a href="fixme" class="fixme">ALL-Charles-Forsman.torrent</a></dd>
-                {{if creator_links:}}
-                    <dt>links:</dt>
-                    <dd>{{=creator_links}}</dd>
-                {{pass}}
-                </dl>
+        </div>
+
+        <hr>
+
+        <div class="row" id="creator_id_section">
+            <div class="col-sm-12" >
+                <div class="row">
+                    <div class="creator_img_container">
+                        <a href="{{=URL(c='creators', f='creator', args=creator.id)}}">
+                        {{=img_tag(creator.image, size='thumb', img_attributes={'_class': 'img-responsive'})}}
+                        </a>
+                    </div>
+                    <div class="creator_links_container">
+                        <dl class="dl-horizontal">
+                        <dt>creator</dt>
+                        <dd><a href="{{=URL(c='creators', f='creator', args=creator.id)}}">{{=creator.name}}</a></dd>
+                        {{for f in ['website', 'twitter', 'email']:}}
+                            {{try:}}
+                            {{if creator[f]:}}
+                                <dt>{{=f}}</dt>
+                                <dd>{{=db.creator[f].represent(creator[f], creator)}}</dd>
+                            {{pass}}
+                            {{except:}}
+                            {{pass}}
+                        {{pass}}
+                        {{if creator_links:}}
+                            <dt>links</dt>
+                            <dd>{{=creator_links}}</dd>
+                        {{pass}}
+                        <dt>torrent </dt>
+                        <dd><a href="fixme" class="fixme">ALL-FIXME.torrent</a></dd>
+                        </dl>
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -2,46 +2,56 @@
 {{from applications.zcomix.modules.utils import ItemDescription}}
 {{extend 'layout.html'}}
 <div id="creator_page">
+
 <div class="row" id="top_section">
-    <div class="col-sm-7" id="top_left_column">
-        <div id="name">
+    <div class="col-sm-4 col-sm-offset-8">
+        {{=LOAD(c='search', f='box', extension='load', ajax=False, content='')}}
+    </div>
+</div>
+
+<div class="row" id="bio_section">
+    <div class="col-sm-7" id="name_bio">
+        <div class="row" id="name">
             {{=creator.name}}
         </div>
+        <div class="row">
         {{=ItemDescription(creator.bio).as_html(**dict(_id='bio'))}}
-        <div class="row" id="id_section">
-            <div class="col-sm-4" id="mug_shot">
+        </div>
+    </div>
+</div>
+
+<div class="row" id="creator_id_section">
+    <div class="col-sm-12" >
+        <div class="row">
+            <div class="creator_img_container">
                 {{=img_tag(creator.image, size='thumb')}}
             </div>
-            <div class="col-sm-8" id="id_details">
+            <div class="creator_links_container">
                 <dl class="dl-horizontal">
-                {{for f in ['website', 'email', 'twitter', 'tumblr']:}}
+                {{for f in ['website', 'twitter', 'email']:}}
                     {{try:}}
                     {{if creator[f]:}}
-                        <dt>{{=f}}:</dt>
+                        <dt>{{=f}}</dt>
                         <dd>{{=db.creator[f].represent(creator[f], creator)}}</dd>
                     {{pass}}
                     {{except:}}
                     {{pass}}
                 {{pass}}
                 {{if links:}}
-                    <dt>links:</dt>
+                    <dt>links</dt>
                     <dd>{{=links}}</dd>
                 {{pass}}
+                <dt>torrent </dt>
+                <dd><a href="fixme" class="fixme">ALL-FIXME.torrent</a></dd>
                 </dl>
             </div>
         </div>
     </div>
-
-    <div class="col-sm-5" id="top_right_column">
-        <div class="row">
-            <div class="col-sm-7 col-sm-offset-5">
-                {{=LOAD(c='search', f='box', extension='load', ajax=False, content='')}}
-            </div>
-        </div>
-    </div>
 </div>
+
 <div id="report_section">
     {{=LOAD(c='creators', f='books', args=[request.args(0)], extension='load', ajax=True, ajax_trap=True)}}
 </div>
+
 </div>
 <script src="{{=URL(c='static', f='js/description.js')}}"> </script>

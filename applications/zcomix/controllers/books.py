@@ -28,15 +28,21 @@ def book():
         db,
         book_record,
         **dict(
-            _class='btn btn-default btn-lg',
+            _class='btn btn-default',
             _type='button',
         )
     )
 
+    pre_links = []
+    if creator.tumblr:
+        pre_links.append(A('tumblr', _href=creator.tumblr, _target='_blank'))
+    if creator.wikipedia:
+        pre_links.append(A('wikipedia', _href=creator.wikipedia, _target='_blank'))
+
     return dict(book=book_record,
-            cover_image=cover_image(db, book_record.id, size='medium'),
+            cover_image=cover_image(db, book_record.id, size='original', img_attributes={'_class': 'img-responsive'}),
             creator=creator,
-            creator_links=CustomLinks(db.creator, creator.id).represent(),
+            creator_links=CustomLinks(db.creator, creator.id).represent(pre_links=pre_links),
             links=CustomLinks(db.book, book_record.id).represent(),
             page_count=db(db.book_page.book_id == book_record.id).count(),
             read_button=read_button,
