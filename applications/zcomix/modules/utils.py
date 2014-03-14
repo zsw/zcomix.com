@@ -14,17 +14,19 @@ class ItemDescription(object):
     A description of an item is usually a blob of text. This class provides
     methods to format the description.
     """
-    # If description is longer than this, the description is truncated with a
-    # '... more' link.
-    truncate_length = 200
 
-    def __init__(self, description):
+    def __init__(self, description, more_text='more', truncate_length=200):
         """Constructor
 
         Args:
             description: string, the full-length item description
+            more_text: string, the text used for the 'more' link.
+            truncate_length: integer, if description is longer than this,
+                the description is truncated with a '... more' link.
         """
         self.description = description
+        self.more_text = more_text
+        self.truncate_length = truncate_length
 
     def as_html(self, **attributes):
         """Return the HTML representation of the description.
@@ -45,7 +47,7 @@ class ItemDescription(object):
 
         if short_description and short_description != self.description:
             anchor = A(
-                'more',
+                self.more_text,
                 _href='#',
                 _class='desc_more_link',
             )
@@ -55,6 +57,7 @@ class ItemDescription(object):
                 ' ... ',
                 anchor,
                 _class='short_description',
+                _title=self.description,
             )
 
             full_div = DIV(

@@ -5,7 +5,7 @@ Controllers for contributions.
 
 from applications.zcomix.modules.stickon.sqlhtml import LocalSQLFORM
 
-CONTRIBUTE_DEFAULT_AMOUNT = 2.00
+CONTRIBUTE_DEFAULT_AMOUNT = 1.00
 
 
 def contribute_widget():

@@ -8,6 +8,7 @@ Book classes and functions.
 import os
 import stat
 from gluon import *
+from gluon.storage import Storage
 from gluon.contrib.simplejson import dumps
 from applications.zcomix.modules.images import \
     Resizer, \
@@ -108,13 +109,14 @@ def book_page_for_json(db, book_page_id):
     )
 
 
-def cover_image(db, book_id, size='original'):
+def cover_image(db, book_id, size='original', img_attributes=None):
     """Return html code suitable for the cover image.
 
     Args:
         db: gluon.dal.DAL instance
         book_id: integer, the id of the book
         size: string, the size of the image. One of Resizer.sizes.keys()
+        img_attributes: dict of attributes for IMG
     """
     query = (db.book_page.book_id == book_id)
     first_page = db(query).select(
@@ -124,48 +126,40 @@ def cover_image(db, book_id, size='original'):
     image = first_page.image if first_page else None
 
     attributes = {}
-    if first_page and size == 'thumb':
+
+    if size == 'thumb':
+        if not first_page:
+            # Create a dummy book_page record
+            first_page = Storage(
+                thumb_w=Resizer.sizes['thumb'][0],
+                thumb_h=Resizer.sizes['thumb'][1],
+                thumb_shrink=Resizer.thumb_shrink_multiplier,
+            )
+
         fmt = ' '.join([
             'width: {w}px;',
             'height: {h}px;',
-            'padding-left: {pl}px;',
-            'padding-top: {pt}px;',
+            'margin: {pv}px {pr}px {pv}px {pl}px;',
         ])
         width = first_page.thumb_w * first_page.thumb_shrink
         height = first_page.thumb_h * first_page.thumb_shrink
-        padding_left = (Resizer.sizes['thumb'][0] - width) / 2
-        if padding_left < 0:
-            padding_left = 0
-        padding_top = (Resizer.sizes['thumb'][1] - height) / 2
-        if padding_top < 0:
-            padding_top = 0
-        attributes['_style'] = fmt.format(
-            w=width,
-            h=height,
-            pl=padding_left,
-            pt=padding_top,
-        )
-
-        fmt = ' '.join([
-            'width: {w}%;',
-            'height: {h}%;',
-            'padding: {pv}% {pr}% {pv}% {pl}%;',
-        ])
-        width = 100 * (first_page.thumb_w * first_page.thumb_shrink / Resizer.sizes['thumb'][0])
-        height = 100 * (first_page.thumb_h * first_page.thumb_shrink / Resizer.sizes['thumb'][1])
         padding_horizontal = (100 - width) / 2
+        padding_horizontal = (Resizer.sizes['thumb'][0] - width)
         if padding_horizontal < 0:
             padding_horizontal = 0
-        padding_vertical = (100 - height) / 2
+        padding_vertical = (Resizer.sizes['thumb'][1] - height) / 2
         if padding_vertical < 0:
             padding_vertical = 0
         attributes['_style'] = fmt.format(
             w=width,
             h=height,
-            pl=padding_horizontal,
+            pl=0,
             pr=0,
             pv=padding_vertical,
         )
+
+    if img_attributes:
+        attributes.update(img_attributes)
 
     return img_tag(image, size=size, img_attributes=attributes)
 
@@ -198,4 +192,4 @@ def read_link(db, book_entity, **attributes):
         reader = book.reader or 'slider'
         url = URL(c='books', f=reader, args=book.id, extension=False)
         kwargs['_href'] = url
-    return A('READ', **kwargs)
+    return A('Read', **kwargs)

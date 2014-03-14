@@ -1,37 +1,54 @@
 {{extend 'layout.html'}}
 <div id="front_page">
 
-<div class="row-fluid" id="top_section">
-<div class="span4 offset8">
-    {{=LOAD(c='search', f='box', extension='load', ajax=False, content='')}}
-</div>
-</div>
-
-<div class="row-fluid" id="intro_section">
-<div class="span7" id="intro">
-This is a not-for-profit site dedicated to promoting self-publishing comic
-creators. It's also an attempt to help readers by organizing content produced
-by these creators.
-</div>
+<div class="row" id="top_section">
+    <div class="col-sm-4 col-sm-offset-8">
+        {{=LOAD(c='search', f='box', extension='load', ajax=False, content='')}}
+    </div>
 </div>
 
-<div class="row-fluid" id="middle_section">
-<div class="span12" id="top_10_heading">
-    <ul class="nav nav-tabs">
-    {{orderbys = ['views', 'newest']}}
-    {{orderby = request.vars.o if request.vars.o in orderbys else orderbys[0]}}
-    {{for o in orderbys:}}
-        <li class="nav-tab {{if o == orderby:}}active{{pass}}">
-            {{orderby_vars = dict(request.vars)}}
-            {{orderby_vars['o'] = o}}
-            <a href="{{=URL(r=request, vars=orderby_vars)}}">{{=o}}</a>
-        </li>
-    {{pass}}
-    </ul>
+<div class="row" id="intro_section">
+    <div class="col-sm-7" id="intro">
+    This is a not-for-profit site dedicated to promoting self-publishing comic
+    creators. It's also an attempt to help readers by organizing content produced
+    by these creators.
+    </div>
 </div>
+
+<div class="row" id="options_section">
+    <div class="col-sm-12" id="options_container">
+        <div class="list_tile_options">
+            <div class="btn-group">
+            {{viewbys = ['list', 'tile']}}
+            {{icons = {'list': 'th-list', 'tile': 'th-large'} }}
+            {{viewby = request.vars.view if request.vars.view in viewbys else 'tile'}}
+            {{for v in ['list', 'tile']:}}
+                {{viewby_vars = dict(request.vars)}}
+                {{viewby_vars['view'] = v}}
+                {{disabled = 'disabled' if v == viewby else 'active'}}
+                <a class="btn btn-default btn-lg {{=disabled}}" type="button"href="{{=URL(r=request, vars=viewby_vars)}}">
+                    <span class="glyphicon glyphicon-{{=icons[v]}}"></span>
+                </a>
+            {{pass}}
+            </div>
+        </div>
+        <ul class="nav nav-tabs">
+        {{orderbys = ['views', 'newest']}}
+        {{orderby = request.vars.o if request.vars.o in orderbys else orderbys[0]}}
+        {{for o in orderbys:}}
+            <li class="nav-tab {{if o == orderby:}}active{{pass}}">
+                {{orderby_vars = dict(request.vars)}}
+                {{orderby_vars['o'] = o}}
+                <a href="{{=URL(r=request, vars=orderby_vars)}}">{{=o}}</a>
+            </li>
+        {{pass}}
+        </ul>
+    </div>
 </div>
-<div id="grid_section">
+
+<div class="grid_section">
 {{func = 'list_grid' if request.vars.view == 'list' else 'cover_grid'}}
 {{=LOAD(c='search', f=func, args=request.args, vars=request.vars, extension='load', ajax=True)}}
 </div>
+
 </div>

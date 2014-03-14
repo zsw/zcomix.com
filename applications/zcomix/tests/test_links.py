@@ -215,8 +215,35 @@ class TestCustomLinks(LocalTestCase):
             anchor = li.find('a')
             self.assertEqual(anchor['title'], str(count))
 
+        # Test pre_links and post_links
+        pre_links = [
+            A('1', _href='http://1.com', _title='pre_link 1'),
+            A('2', _href='http://2.com', _title='pre_link 2'),
+            ]
+        post_links = [
+            A('1', _href='http://1.com', _title='post_link 1'),
+            A('2', _href='http://2.com', _title='post_link 2'),
+            ]
+        links = CustomLinks(db.creator, self._creator['id'])
+        got = links.represent(pre_links=pre_links, post_links=post_links)
+        soup = BeautifulSoup(str(got))
+        ul = soup.find('ul')
+        lis = ul.findAll('li')
+        self.assertEqual(len(lis), 7)
+        pres = lis[:2]
+        for count, li in enumerate(pres, 1):
+            anchor = li.find('a')
+            self.assertEqual(anchor['title'], 'pre_link {c}'.format(c=count))
+
+        posts = lis[-2:]
+        for count, li in enumerate(posts, 1):
+            anchor = li.find('a')
+            self.assertEqual(anchor['title'], 'post_link {c}'.format(c=count))
+
+        # Test no links
         links = CustomLinks(db.creator, self._creator_2['id'])
         self.assertEqual(links.represent(), None)
+
 
 
 class TestReorderLink(LocalTestCase):

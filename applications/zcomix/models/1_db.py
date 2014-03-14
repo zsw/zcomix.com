@@ -35,6 +35,7 @@ response.generic_patterns = ['*'] if request.is_local else []
 # response.static_version = '0.0.0'
 
 import os
+import re
 from gluon import *
 from gluon.storage import Storage
 from applications.zcomix.modules.stickon.tools import ModelDb
@@ -65,6 +66,7 @@ auth.settings.change_password_next = URL(c='profile', f='index')
 
 auth.settings.renew_session_onlogin = False
 auth.settings.renew_session_onlogout = False
+auth.settings.formstyle = 'bootstrap3'
 auth.default_messages['profile_save_button']='Submit'
 auth.messages.verify_email = 'Click on the link http://' + request.env.http_host + URL('default', 'user', args=['verify_email']) + '/%(key)s to verify your email'
 auth.messages.reset_password = 'Click on the link http://' + request.env.http_host + URL('default', 'user', args=['reset_password']) + '/%(key)s to reset your password'
@@ -263,11 +265,13 @@ db.define_table('creator',
         comment='Required to received donations.',
     ),
     Field('website',
-        comment='Eg. http://www.myhomepage.com',
-        represent=lambda url, row: A(url,
+        comment='Eg. http://myhomepage.com',
+        represent=lambda url, row: A(
+            re.sub(r'^http[s]*://', '', url),
             _href=url,
             _target="_blank",
             ) if url else '',
+        requires=IS_EMPTY_OR(IS_URL()),
     ),
     Field('twitter',
         comment='Eg. @username',
@@ -282,9 +286,15 @@ db.define_table('creator',
             _href=url,
             _target="_blank",
             ) if url else '',
+        requires=IS_EMPTY_OR(IS_URL()),
     ),
     Field('wikipedia',
         comment='Eg. http://en.wikipedia.org/wiki/First_Surname',
+        represent=lambda url, row: A(url,
+            _href=url,
+            _target="_blank",
+            ) if url else '',
+        requires=IS_EMPTY_OR(IS_URL()),
     ),
     Field('bio', 'text',
         comment='Provide a biography, for example, a few sentences similar to the first paragraph of a wikipedia article.'

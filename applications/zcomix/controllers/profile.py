@@ -54,6 +54,7 @@ def book_edit():
     )
 
     crud.settings.update_deletable = False
+    crud.settings.formstyle = 'bootstrap3'
     if request.args(0):
         # Reload page to prevent consecutive self-submit warnings
         crud.settings.update_next = URL('book_edit', args=request.args)
@@ -113,9 +114,6 @@ def book_pages():
         redirect(URL('books'))
 
     response.files.append(
-        '//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css'
-    )
-    response.files.append(
         URL('static', 'blueimp/jQuery-File-Upload/css/jquery.fileupload.css')
     )
     response.files.append(
@@ -129,7 +127,7 @@ def book_pages():
         db,
         book_record,
         **dict(
-            _class='btn btn-large',
+            _class='btn btn-default btn-lg',
             _type='button',
             _target='_blank',
         )
@@ -324,7 +322,7 @@ def book_release():
         db,
         book_record,
         **dict(
-            _class='btn btn-large',
+            _class='btn btn-default btn-lg',
             _type='button',
             _target='_blank',
         )
@@ -385,10 +383,11 @@ def creator():
     # custom_delete is not defined in the model to keep the model lean.
     db.creator.image.custom_delete = custom_delete
 
-    # Reload page to prevent consecutive self-submit warnings
     crud.settings.update_onaccept = [onupdate]
+    # Reload page to prevent consecutive self-submit warnings
     crud.settings.update_next = URL('creator')
     crud.settings.update_deletable = False
+    crud.settings.formstyle = 'bootstrap3'
     form = crud.update(db.creator, creator_record.id)
 
     return dict(form=form)

@@ -51,9 +51,9 @@ class CustomLinks(object):
         links_list = self.links()
         if edit_url:
             edit_button = A(
-                    'Edit', SPAN('', _class='icon share-alt icon-share-alt'),
+                    'Edit', SPAN('', _class='glyphicon glyphicon-new-window'),
                     _href=edit_url,
-                    _class='btn',
+                    _class='btn btn-default',
                     _type='button',
                     _target='_blank',
                     )
@@ -129,15 +129,24 @@ class CustomLinks(object):
             query=filter_query
         )
 
-    def represent(self):
+    def represent(self, pre_links=None, post_links=None):
         """Return HTML representing the links suitable for displaying on a
         public webpage.
+
+        Args:
+            pre_links: list of A() instances, links are added to the start of the links list.
+            post_links: list of A() instances, links are added to the end of the links list.
         """
-        links = self.links()
+        links = []
+        if pre_links:
+            links.extend(pre_links)
+        links.extend(self.links())
+        if post_links:
+            links.extend(post_links)
         if not links:
             return None
-        return UL([LI(x) for x in self.links()],
-                _class='inline',
+        return UL([LI(x) for x in links],
+                _class='list-inline custom_links',
                 )
 
 
@@ -208,7 +217,7 @@ class ReorderLink(object):
             return SPAN('-')
 
         return A(SPAN('',
-                    _class='icon arrow-{dir} icon-arrow-{dir}'.format(dir=self.direction),
+                    _class='glyphicon glyphicon-arrow-{dir}'.format(dir=self.direction),
                     _title=self.direction
                     ),
                 _href=URL(c='profile', f='order_no_handler',
