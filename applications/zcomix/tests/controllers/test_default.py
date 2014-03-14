@@ -19,10 +19,10 @@ from applications.zcomix.modules.test_runner import LocalTestCase
 class TestFunctions(LocalTestCase):
 
     titles = {
-            'data': '<h2>Not authorized</h2>',
-            'index': 'This is a not-for-profit site dedicated to promoting',
-            'user': '<h2>Login</h2>',
-            }
+        'data': '<h2>Not authorized</h2>',
+        'index': 'This is a not-for-profit site dedicated to promoting',
+        'user': '<h2>Login</h2>',
+    }
     url = '/zcomix/default'
 
     def test__call(self):
@@ -32,8 +32,12 @@ class TestFunctions(LocalTestCase):
         self.assertEqual(cm.exception.msg, 'NOT FOUND')
 
     def test__data(self):
-        self.assertTrue(web.test('{url}/data'.format(url=self.url),
-            self.titles['data']))
+        self.assertTrue(
+            web.test(
+                '{url}/data'.format(url=self.url),
+                self.titles['data']
+            )
+        )
 
     def test__download(self):
         with self.assertRaises(urllib2.HTTPError) as cm:
@@ -44,6 +48,9 @@ class TestFunctions(LocalTestCase):
     def test__index(self):
         self.assertTrue(web.test('{url}/index'.format(url=self.url),
             self.titles['index']))
+
+        # Test that settings.conf is respected
+        self.assertEqual(auth.settings.expiration, 86400)
 
     def test__user(self):
         self.assertTrue(web.test('{url}/user'.format(url=self.url),

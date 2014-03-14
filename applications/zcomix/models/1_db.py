@@ -38,18 +38,23 @@ import os
 import re
 from gluon import *
 from gluon.storage import Storage
+from gluon.tools import PluginManager
 from applications.zcomix.modules.stickon.tools import ModelDb
 from applications.zcomix.modules.creators import add_creator
 
-from gluon.tools import Auth, Crud, Service, PluginManager
-auth = Auth(db)
-crud, service, plugins = Crud(db), Service(), PluginManager()
+model_db = ModelDb(globals())
+db = model_db.db
+auth = model_db.auth
+crud = model_db.crud
+service = model_db.service
+mail = model_db.mail
+local_settings = model_db.local_settings
+plugins = PluginManager()
 
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=False)
 
 ## configure email
-mail = auth.settings.mailer
 mail.settings.sender = 'iiijjjiii@gmail.com'
 mail.settings.server = 'smtp.gmail.com:587'
 mail.settings.login = 'iiijjjiii:gretz66Mario99'
@@ -77,13 +82,12 @@ current.app.crud = crud
 current.app.db = db
 current.app.service = service
 current.app.mail = mail
-model_db = ModelDb(globals(), init_all=False)
-current.app.local_settings = model_db.local_settings
+current.app.local_settings = local_settings
 
 ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
 ## register with janrain.com, write your domain:api_key in private/janrain.key
-from gluon.contrib.login_methods.rpx_account import use_janrain
-use_janrain(auth, filename='private/janrain.key')
+#from gluon.contrib.login_methods.rpx_account import use_janrain
+#use_janrain(auth, filename='private/janrain.key')
 
 crud.settings.auth = None                      # =auth to enforce authorization on crud
 
