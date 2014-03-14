@@ -2,6 +2,7 @@
 {{extend 'books/reader.html'}}
 <div id="scroller_page">
     <div id="reader_container">
+        <div id="reader_inner_container">
         {{if pages:}}
             {{for count, page in enumerate(pages):}}
             <div id="img-{{=count}}" class="scroller">
@@ -11,5 +12,6 @@
         {{else:}}
         No pages found.
         {{pass}}
+        </div>
     </div>
 </div>
