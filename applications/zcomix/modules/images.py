@@ -45,7 +45,7 @@ class Downloader(Response):
             raise HTTP(404)
 
         # Customization: start
-        if request.vars.size and request.vars.size in Resizer.sizes:
+        if request.vars.size and request.vars.size in UploadImage.sizes:
             resized = stream.replace('/original/', '/{s}/'.format(s=request.vars.size))
             if os.path.exists(resized):
                 stream = resized
@@ -61,7 +61,7 @@ class Downloader(Response):
         return self.stream(stream, chunk_size=chunk_size, request=request)
 
 
-class Resizer(object):
+class UploadImage(object):
     """Class representing an image resizer"""
 
     sizes = {
@@ -178,7 +178,7 @@ def img_tag(field, size='original', img_attributes=None):
     attributes = {}
 
     if field:
-        if size != 'original' and size not in Resizer.sizes.keys():
+        if size != 'original' and size not in UploadImage.sizes.keys():
             size = 'original'
 
         attributes.update(dict(
@@ -218,11 +218,11 @@ def set_thumb_dimensions(db, book_page_id, dimensions):
         return
     w = dimensions[0]
     h = dimensions[1]
-    shrink = True if h > Resizer.thumb_shrink_threshold \
-        and w > Resizer.thumb_shrink_threshold \
+    shrink = True if h > UploadImage.thumb_shrink_threshold \
+        and w > UploadImage.thumb_shrink_threshold \
         else False
 
-    thumb_shrink = Resizer.thumb_shrink_multiplier if shrink else 1
+    thumb_shrink = UploadImage.thumb_shrink_multiplier if shrink else 1
 
     db(db.book_page.id == book_page_id).update(
         thumb_w=w,

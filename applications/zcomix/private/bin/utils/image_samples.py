@@ -16,7 +16,7 @@ from gluon import *
 from gluon.shell import env
 from optparse import OptionParser
 from PIL import Image, ImageDraw, ImageFont
-from applications.zcomix.modules.images import Resizer
+from applications.zcomix.modules.images import UploadImage
 
 VERSION = 'Version 0.1'
 APP_ENV = env(__file__.split(os.sep)[-3], import_models=True)

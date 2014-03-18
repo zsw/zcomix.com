@@ -8,7 +8,7 @@ from applications.zcomix.modules.books import \
     book_page_for_json, \
     read_link
 from applications.zcomix.modules.images import \
-    Resizer, \
+    UploadImage, \
     img_tag, \
     set_thumb_dimensions
 from applications.zcomix.modules.links import \
@@ -238,7 +238,7 @@ def book_pages_handler():
                 thumb_shrink=1,
             )
             db.commit()
-            resizer = Resizer(db.book_page.image, stored_filename)
+            resizer = UploadImage(db.book_page.image, stored_filename)
             resizer.resize_all()
             set_thumb_dimensions(db, page_id, resizer.dimensions(size='thumb'))
             book_page_ids.append(page_id)
@@ -255,7 +255,7 @@ def book_pages_handler():
             book_page.image,
             nameonly=True,
         )
-        resizer = Resizer(db.book_page.image, book_page.image)
+        resizer = UploadImage(db.book_page.image, book_page.image)
         resizer.delete_all()
         book_page.delete_record()
         # Make sure page_no values are sequential
@@ -422,13 +422,13 @@ def creator():
         redirect(URL('index'))
 
     def custom_delete(oldname):
-        resizer = Resizer(db.creator.image, oldname)
+        resizer = UploadImage(db.creator.image, oldname)
         resizer.delete_all()
 
     def onupdate(form):
         """On update callback function"""
         if form.vars.image:
-            resizer = Resizer(db.creator.image, form.vars.image)
+            resizer = UploadImage(db.creator.image, form.vars.image)
             resizer.resize_all()
 
     # custom_delete is not defined in the model to keep the model lean.

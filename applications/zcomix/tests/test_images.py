@@ -17,7 +17,7 @@ from gluon import *
 from gluon.http import HTTP
 from applications.zcomix.modules.images import \
     Downloader, \
-    Resizer, \
+    UploadImage, \
     img_tag, \
     set_thumb_dimensions
 from applications.zcomix.modules.test_runner import LocalTestCase
@@ -59,7 +59,7 @@ class ImageTestCase(LocalTestCase):
 
         # Create a creator and set the image
         creator_id = db.creator.insert(
-            name='Image Resizer',
+            name='Image UploadImage',
             email='resizer@example.com',
             image=stored_filename,
         )
@@ -109,7 +109,7 @@ class TestDownloader(ImageTestCase):
         request.vars.size = 'thumb'
         test_http('original')
 
-        resizer = Resizer(db.creator.image, self._creator.image)
+        resizer = UploadImage(db.creator.image, self._creator.image)
         resizer.resize_all()
 
         request.vars.size = None
@@ -120,7 +120,7 @@ class TestDownloader(ImageTestCase):
         test_http('thumb')
 
 
-class TestResizer(ImageTestCase):
+class TestUploadImage(ImageTestCase):
 
     def _exist(self, have=None, have_not=None):
         """Test if image files exist"""
@@ -140,7 +140,7 @@ class TestResizer(ImageTestCase):
             self.assertTrue(not os.path.exists(file_name))
 
     def test____init__(self):
-        resizer = Resizer(db.creator.image, self._image_name)
+        resizer = UploadImage(db.creator.image, self._image_name)
         self.assertTrue(resizer)
         file_name, fullname = db.creator.image.retrieve(
             self._creator.image,
@@ -151,7 +151,7 @@ class TestResizer(ImageTestCase):
         self.assertEqual(resizer._dimensions, {})
 
     def test__delete(self):
-        resizer = Resizer(db.creator.image, self._creator.image)
+        resizer = UploadImage(db.creator.image, self._creator.image)
         resizer.resize_all()
 
         self._exist(have=['original', 'medium', 'thumb'])
@@ -165,7 +165,7 @@ class TestResizer(ImageTestCase):
         self._exist(have_not=['original', 'medium', 'thumb'])
 
     def test__delete_all(self):
-        resizer = Resizer(db.creator.image, self._creator.image)
+        resizer = UploadImage(db.creator.image, self._creator.image)
         resizer.resize_all()
 
         self._exist(have=['original', 'medium', 'thumb'])
@@ -175,7 +175,7 @@ class TestResizer(ImageTestCase):
         self._exist(have_not=['original', 'medium', 'thumb'])
 
     def test__dimensions(self):
-        resizer = Resizer(db.creator.image, self._creator.image)
+        resizer = UploadImage(db.creator.image, self._creator.image)
         self.assertEqual(resizer._dimensions, {})
 
         dims = resizer.dimensions()
@@ -196,7 +196,7 @@ class TestResizer(ImageTestCase):
         self.assertEqual(dims_4, (500, 500))
 
     def test__fullname(self):
-        resizer = Resizer(db.creator.image, self._creator.image)
+        resizer = UploadImage(db.creator.image, self._creator.image)
         self.assertEqual(
             resizer.fullname(),
             '/tmp/image_resizer/original/creator.image/{u}/{i}'.format(
@@ -220,7 +220,7 @@ class TestResizer(ImageTestCase):
         )
 
     def test__pil_image(self):
-        resizer = Resizer(db.creator.image, self._creator.image)
+        resizer = UploadImage(db.creator.image, self._creator.image)
         self.assertEqual(resizer._images, {})
 
         im = resizer.pil_image()
@@ -241,16 +241,16 @@ class TestResizer(ImageTestCase):
         self.assertEqual(im_4, resizer._images['medium'])
 
     def test__resize(self):
-        resizer = Resizer(db.creator.image, self._creator.image)
+        resizer = UploadImage(db.creator.image, self._creator.image)
         medium = resizer.resize('medium')
         im = Image.open(medium)
-        self.assertEqual(im.size, Resizer.sizes['medium'])
+        self.assertEqual(im.size, UploadImage.sizes['medium'])
         thumb = resizer.resize('thumb')
         im = Image.open(thumb)
-        self.assertEqual(im.size, Resizer.sizes['thumb'])
+        self.assertEqual(im.size, UploadImage.sizes['thumb'])
 
     def test__resize_all(self):
-        resizer = Resizer(db.creator.image, self._creator.image)
+        resizer = UploadImage(db.creator.image, self._creator.image)
         resizer.resize_all()
         unused_filename, original_fullname = db.creator.image.retrieve(
             self._creator.image,
