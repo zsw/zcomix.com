@@ -15,7 +15,7 @@ from gluon import *
 from gluon.shell import env
 from optparse import OptionParser
 from applications.zcomix.modules.images import \
-    Resizer, \
+    UploadImage, \
     set_thumb_dimensions
 
 VERSION = 'Version 0.1'
@@ -47,7 +47,7 @@ class ImageHandler(object):
         Args:
             filenames: list of image filenames, if empty all images are
                 resized.
-            size: string, one of Resizer.sizes
+            size: string, one of UploadImage.sizes
             field: string, one of FIELDS
             record_id: integer, id of database record.
             dry_run: If True, make no changes.
@@ -91,9 +91,9 @@ class ImageHandler(object):
         """Resize images."""
         LOG.debug('{a}: {t} {i} {f} {s}'.format(
             a='Action', t='table', i='id', f='image', s='size'))
-        sizes = [self.size] if self.size else Resizer.sizes.keys()
+        sizes = [self.size] if self.size else UploadImage.sizes.keys()
         for field, record_id, image_name, original in self.image_generator():
-            resizer = Resizer(field, image_name)
+            resizer = UploadImage(field, image_name)
             for size in sizes:
                 action = 'Dry run' if self.dry_run else 'Resizing'
                 LOG.debug('{a}: {t} {i} {f} {s}'.format(
@@ -213,7 +213,7 @@ def main():
     )
     parser.add_option(
         '-s', '--size',
-        choices=Resizer.sizes.keys(),
+        choices=UploadImage.sizes.keys(),
         dest='size', default=None,
         help='Resize images to this size only.',
     )
@@ -256,7 +256,7 @@ def main():
 
     if options.sizes:
         print 'Image sizes:'
-        for name, size in Resizer.sizes.items():
+        for name, size in UploadImage.sizes.items():
             w, h = size
             print '    {n}: ({w} x {h})'.format(n=name, w=w, h=h)
         quick_exit = True

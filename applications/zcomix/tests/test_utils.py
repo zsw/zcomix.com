@@ -9,9 +9,11 @@ Test suite for zcomix/modules/utils.py
 import unittest
 from BeautifulSoup import BeautifulSoup
 from gluon import *
+from gluon.storage import Storage
 from applications.zcomix.modules.utils import \
     ItemDescription, \
     move_record, \
+    profile_wells, \
     reorder
 from applications.zcomix.modules.test_runner import LocalTestCase
 
@@ -155,6 +157,102 @@ class TestFunctions(LocalTestCase):
         test_move('a', 'down', ['b', 'a', 'c'], query=query)
         # 'c' is not included in query so it doesn't move.
         test_move('a', 'down', ['b', 'a', 'c'], query=query)
+
+    def test__profile_wells(self):
+        request = Storage()
+        request.function = 'books'
+        request.args = [99]
+
+        tests = [
+            #(request.function, expect)
+            ('index', {
+                'index': 'text',
+                'change_password': 'link',
+                'creator': 'link',
+                'creator_links': 'link',
+                'creator_link_edit': None,
+                'books': 'link',
+                'book_edit': None,
+                'book_pages': None,
+                'book_links': None,
+                'book_link_edit': None,
+                'book_release': None,
+            }),
+            ('creator', {
+                'index': 'link',
+                'change_password': 'link',
+                'creator': 'text',
+                'creator_links': 'link',
+                'creator_link_edit': None,
+                'books': 'link',
+                'book_edit': None,
+                'book_pages': None,
+                'book_links': None,
+                'book_link_edit': None,
+                'book_release': None,
+            }),
+            ('creator_link_edit', {
+                'index': 'link',
+                'change_password': 'link',
+                'creator': 'link',
+                'creator_links': 'link',
+                'creator_link_edit': 'text',
+                'books': 'link',
+                'book_edit': None,
+                'book_pages': None,
+                'book_links': None,
+                'book_link_edit': None,
+                'book_release': None,
+            }),
+            ('books', {
+                'index': 'link',
+                'change_password': 'link',
+                'creator': 'link',
+                'creator_links': 'link',
+                'creator_link_edit': None,
+                'books': 'text',
+                'book_edit': None,
+                'book_pages': None,
+                'book_links': None,
+                'book_link_edit': None,
+                'book_release': None,
+            }),
+            ('book_edit', {
+                'index': 'link',
+                'change_password': 'link',
+                'creator': 'link',
+                'creator_links': 'link',
+                'creator_link_edit': None,
+                'books': 'link',
+                'book_edit': 'text',
+                'book_pages': 'link',
+                'book_links': 'link',
+                'book_link_edit': None,
+                'book_release': None,
+            }),
+            ('book_link_edit', {
+                'index': 'link',
+                'change_password': 'link',
+                'creator': 'link',
+                'creator_links': 'link',
+                'creator_link_edit': None,
+                'books': 'link',
+                'book_edit': 'link',
+                'book_pages': None,
+                'book_links': 'link',
+                'book_link_edit': 'text',
+                'book_release': None,
+            }),
+        ]
+
+        for t in tests:
+            request = Storage()
+            request.function = t[0]
+            wells = profile_wells(request)
+            statuses = {}
+            for k, v in wells.items():
+                statuses[k] = v['status']
+            self.assertEqual(statuses, t[1])
 
     def test__reorder(self):
         self._reset()
