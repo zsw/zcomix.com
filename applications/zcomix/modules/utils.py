@@ -5,6 +5,7 @@
 
 Utilty classes and functions.
 """
+import collections
 from gluon import *
 
 
@@ -112,6 +113,103 @@ def move_record(sequential_field, record_id, direction='up', query=None, start=1
         new_order_value = start
     record_ids.insert(new_order_value - 1, record.id)
     reorder(sequential_field, record_ids=record_ids, query=query, start=start)
+
+
+def profile_wells(request):
+    """Return data for wells on the profile page.
+
+    Args:
+        request: gluon.globals.Request instance
+
+    Returns:
+        dict of well data
+    """
+    # The keys of wells_data must match the profile controller names.
+    # Wells are displayed in the order of wells_data.
+    active_well = request.function
+
+    wells_data = [
+        # (key, {data})
+        ('index', {'label': 'Account Profile'}),
+        ('change_password', {'label': 'Change Password'}),
+        ('creator', {'label': 'Creator Profile'}),
+        ('creator_links', {
+            'label': 'Creator Links',
+            'show_children': False,         # Children links in grid
+        }),
+        ('creator_link_edit', {
+            'label': 'Creator Link Edit',
+            'parent': 'creator_links',
+        }),
+        ('books', {
+            'label': 'Books',
+            'show_children': False,         # Children links in grid
+        }),
+        ('book_edit', {
+            'label': 'Book Edit',
+            'parent': 'books',
+            'args': request.args,
+        }),
+        ('book_pages', {
+            'label': 'Book Pages',
+            'parent': 'book_edit',
+            'args': request.args,
+        }),
+        ('book_links', {
+            'label': 'Book Links',
+            'parent': 'book_edit',
+            'show_children': False,         # Children links in grid
+            'args': request.args,
+        }),
+        ('book_link_edit', {
+            'label': 'Book Link Edit',
+            'parent': 'book_links',
+            'args': request.args,
+        }),
+        ('book_release', {
+            'label': 'Book Release',
+            'parent': 'books',
+            'args': request.args,
+        }),
+    ]
+    wells = collections.OrderedDict(wells_data)
+
+    # Calculate the children of each.
+    for well in wells.keys():
+        wells[well]['children'] = []
+
+    for well in wells.keys():
+        if 'parent' in wells[well] and wells[well]['parent'] in wells:
+            wells[wells[well]['parent']]['children'].append(well)
+
+    # Calculate the status, None=hide, 'link'= as link, 'text'= as text
+    for well in wells.keys():
+        wells[well]['status'] = None
+        if 'show_children' not in wells[well]:
+            wells[well]['show_children'] = True
+
+    # Set all wells with no parents as shown
+    for well in wells.keys():
+        if 'parent' not in wells[well] or not wells[well]['parent']:
+            wells[well]['status'] = 'link'
+
+    # Show children of active well if applicable
+    if wells[request.function]['children'] and wells[request.function]['show_children']:
+        for w in wells[request.function]['children']:
+            wells[w]['status'] = 'link'
+
+    # Recursively show all parents of active well.
+    current = request.function
+    while current:
+        wells[current]['status'] = 'link'
+        if 'parent' in wells[current]:
+            current = wells[current]['parent']
+        else:
+            current = None
+
+    # Show the active link as text.
+    wells[request.function]['status'] = 'text'
+    return wells
 
 
 def reorder(sequential_field, record_ids=None, query=None, start=1):

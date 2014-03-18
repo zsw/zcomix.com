@@ -68,6 +68,57 @@ def book_edit():
 
 
 @auth.requires_login()
+def book_link_edit():
+    """Book edit controller.
+
+    request.args(0): integer, id of book
+    request.args(1): integer, id of link record. Optional if None or 0, form
+        is in create mode.
+    """
+    creator_record = db(db.creator.auth_user_id == auth.user_id).select(
+        db.creator.ALL
+    ).first()
+    if not creator_record:
+        redirect(URL('book_links'))
+
+    book_record = None
+    if request.args(0):
+        book_record = db(db.book.id == request.args(0)).select(
+            db.book.ALL
+        ).first()
+    if (request.args(0) and not book_record) or \
+            (book_record and book_record.creator_id != creator_record.id):
+        redirect(URL('book_links'))
+
+    def oncreate(form):
+        """Callback for oncreate."""
+        # Create book_to_link record for the new link.
+        order_no = db(db.book_to_link.book_id == book_record.id).count() + 1
+        db.book_to_link.insert(
+            book_id=book_record.id,
+            link_id=form.vars.id,
+            order_no=order_no,
+        )
+        db.commit()
+
+    crud.settings.update_deletable = False
+    crud.settings.formstyle = 'bootstrap3'
+    if request.args(1):
+        crud.settings.update_next = URL('book_links', args=request.args(0))
+        form = crud.update(db.link, request.args(1))
+    else:
+        crud.settings.create_next = URL('book_links', args=request.args(0))
+        crud.settings.create_onaccept = [oncreate]
+        form = crud.create(db.link)
+
+    return dict(
+        book=book_record,
+        creator=creator_record,
+        form=form,
+    )
+
+
+@auth.requires_login()
 def book_links():
     """Book links controller.
 
@@ -394,6 +445,43 @@ def creator():
 
 
 @auth.requires_login()
+def creator_link_edit():
+    """Creator link edit controller.
+
+    request.args(0): integer, id of link record. Optional if None or 0, form
+        is in create mode.
+    """
+    creator_record = db(db.creator.auth_user_id == auth.user_id).select(
+        db.creator.ALL
+    ).first()
+    if not creator_record:
+        redirect(URL('creator_links'))
+
+    def oncreate(form):
+        """Callback for oncreate."""
+        # Create creator_to_link record for the new link.
+        order_no = db(db.creator_to_link.creator_id == creator_record.id).count() + 1
+        db.creator_to_link.insert(
+            creator_id=creator_record.id,
+            link_id=form.vars.id,
+            order_no=order_no,
+        )
+        db.commit()
+
+    crud.settings.update_deletable = False
+    crud.settings.formstyle = 'bootstrap3'
+    if request.args(0):
+        crud.settings.update_next = URL('creator_links')
+        form = crud.update(db.link, request.args(0))
+    else:
+        crud.settings.create_next = URL('creator_links')
+        crud.settings.create_onaccept = [oncreate]
+        form = crud.create(db.link)
+
+    return dict(form=form)
+
+
+@auth.requires_login()
 def creator_links():
     """Creator links controller."""
     creator_record = db(db.creator.auth_user_id == auth.user_id).select(
@@ -524,9 +612,37 @@ def links():
         db.commit()
         links.reorder()
 
+    def row_link_id(row):
+        return row.link.id if 'link' in row else 0
+
+    def edit_link(row):
+        link_id = row_link_id(row)
+        if not link_id:
+            return ''
+        main_name = 'book' if book_record else 'creator'
+        args = []
+        if book_record:
+            args.append(book_record.id)
+        args.append(link_id)
+
+        return A(
+            SPAN(_class="glyphicon glyphicon-pencil"),
+            'Edit',
+            _href=URL(
+                c='profile',
+                f='{m}_link_edit'.format(m=main_name),
+                args=args,
+                anchor='{m}_link_edit'.format(m=main_name),
+                extension=False
+            ),
+            _class='btn btn-default',
+            _type='button',
+        )
+
     grid_links = [
         ReorderLink(link_table, direction='up', next_url=next_url).links_dict(),
         ReorderLink(link_table, direction='down', next_url=next_url).links_dict(),
+        {'header': '', 'body': edit_link},
     ]
 
     grid = LocalSQLFORM.grid(
@@ -540,9 +656,9 @@ def links():
             'link.url': 100,
         },
         details=False,
-        editable=True,
+        editable=False,
         deletable=True,
-        create=True,
+        create=False,
         csv=False,
         searchable=False,
         oncreate=oncreate,
@@ -558,7 +674,7 @@ def links():
         if str(div) == '<div class="web2py_counter">None</div>':
             del grid[0][count]
 
-    return dict(grid=grid)
+    return dict(grid=grid, book=book_record)
 
 
 def order_no_handler():

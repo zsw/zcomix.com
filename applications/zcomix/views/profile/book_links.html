@@ -4,20 +4,3 @@
     <dt>Book:</dt><dd>{{=book.name}}</dd>
 </dl>
 {{=LOAD(c='profile', f='links', vars={'book_id': book.id},extension='load', ajax=True)}}
-<h4>Instructions</h4>
-<div class="text-muted">
-    <p>Use custom links to direct readers to pages related to this book.</p>
-    <p>For example:</p>
-    <dl class="dl-horizontal">
-    <dt>URL:</dt><dd>http://comicartcommissions.com/Blair.html</dd>
-    <dt>Text:</dt><dd>commissions</dd>
-    <dt>Title:</dt><dd>Comic Art Commissions page where you can commission me for art work.</dd>
-    </dl>
-    <p>
-    The resulting link is: <a href="http://comicartcommissions.com/Blair.html" title="Comic Art Commissions page where you can commission me for art work." target="_blank">commissions</a>
-    </p>
-    <p>
-    Note: Do not add links to sites or pages dedicated to you and your services
-    here. The creator edit page provides a spot for that.
-    <p>
-</div>
