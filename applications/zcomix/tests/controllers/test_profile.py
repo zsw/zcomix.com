@@ -25,12 +25,12 @@ class TestFunctions(LocalTestCase):
     _user = None
 
     titles = {
+        'account': '<div class="well well-large" id="account">',
         'book_edit': '<div class="well well-large" id="book_edit">',
         'book_links': '<div class="well well-large" id="book_links">',
         'book_pages': '<div class="well well-large" id="book_pages">',
         'book_release': '<div class="well well-large" id="book_release">',
         'books': '<div class="well well-large" id="books">',
-        'change_password': '<div class="well well-large" id="change_password">',
         'creator': '<div class="well well-large" id="creator">',
         'creator_links': '<div class="well well-large" id="creator_links">',
         'default': 'This is a not-for-profit site dedicated to promoting',
@@ -73,6 +73,10 @@ class TestFunctions(LocalTestCase):
         if not cls._book_to_link:
             self.fail('No book_to_link with email: {e}'.format(e=email))
 
+    def test__account(self):
+        self.assertTrue(web.test('{url}/account'.format(url=self.url),
+            self.titles['account']))
+
     def test__book_edit(self):
         # No book id, Add mode
         self.assertTrue(web.test('{url}/book_edit'.format(url=self.url),
@@ -113,10 +117,6 @@ class TestFunctions(LocalTestCase):
         self.assertTrue(web.test('{url}/books'.format(
             bid=self._book.id, url=self.url),
             self.titles['books']))
-
-    def test__change_password(self):
-        self.assertTrue(web.test('{url}/change_password'.format(url=self.url),
-            self.titles['change_password']))
 
     def test__creator(self):
         self.assertTrue(web.test('{url}/creator'.format(url=self.url),

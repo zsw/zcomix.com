@@ -167,7 +167,7 @@ class TestFunctions(LocalTestCase):
             #(request.function, expect)
             ('index', {
                 'index': 'text',
-                'change_password': 'link',
+                'account': 'link',
                 'creator': 'link',
                 'creator_links': 'link',
                 'creator_link_edit': None,
@@ -180,7 +180,7 @@ class TestFunctions(LocalTestCase):
             }),
             ('creator', {
                 'index': 'link',
-                'change_password': 'link',
+                'account': 'link',
                 'creator': 'text',
                 'creator_links': 'link',
                 'creator_link_edit': None,
@@ -193,7 +193,7 @@ class TestFunctions(LocalTestCase):
             }),
             ('creator_link_edit', {
                 'index': 'link',
-                'change_password': 'link',
+                'account': 'link',
                 'creator': 'link',
                 'creator_links': 'link',
                 'creator_link_edit': 'text',
@@ -206,7 +206,7 @@ class TestFunctions(LocalTestCase):
             }),
             ('books', {
                 'index': 'link',
-                'change_password': 'link',
+                'account': 'link',
                 'creator': 'link',
                 'creator_links': 'link',
                 'creator_link_edit': None,
@@ -219,7 +219,7 @@ class TestFunctions(LocalTestCase):
             }),
             ('book_edit', {
                 'index': 'link',
-                'change_password': 'link',
+                'account': 'link',
                 'creator': 'link',
                 'creator_links': 'link',
                 'creator_link_edit': None,
@@ -232,7 +232,7 @@ class TestFunctions(LocalTestCase):
             }),
             ('book_link_edit', {
                 'index': 'link',
-                'change_password': 'link',
+                'account': 'link',
                 'creator': 'link',
                 'creator_links': 'link',
                 'creator_link_edit': None,
